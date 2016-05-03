@@ -1,0 +1,80 @@
+<html lang="en" ng-app="ehri">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+    <meta http-equiv="Content-Language" content="en-uk"/>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+          integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="js/modules/angular.js"></script>
+    <script src="js/ehri.js"></script>
+    <script src="js/controllers.js"></script>
+    <script src="http://d3js.org/topojson.v0.min.js"></script>
+
+    <style>
+        path {
+            stroke: white;
+            stroke-width: 0.25px;
+            fill: #b6b6b6;
+        }
+
+        #scrollable {
+            height: 200px;
+            overflow-y: scroll;
+
+        }
+
+    </style>
+    <!--<script src="js/modules/ehri-d3-module.js"></script>-->
+
+    <!--<script src="http://colorbrewer2.org/export/colorbrewer.js"></script>-->
+    <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
+    <!--<script src="http://d3js.org/topojson.v1.min.js"></script>-->
+
+    <!--<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"/>-->
+
+    <title>EHRI - prototype</title>
+</head>
+<body>
+
+<div id="wrap" class="container">
+    <legend>EHRI - locations visualization</legend>
+    <div class="row">
+        <div class="col-xs-10" ng-controller="textProcessingController">
+
+            <div class="row">
+                <div class="col-xs-6">
+                    <form ng-submit="process(text)">
+
+                    <textarea id="inputTextArea" type="text" class="form-control" ng-model-onblur
+                              focus-on="focusMe"
+                              ng-model="text"
+                              rows="5" name="text"></textarea>
+
+                        <button type="submit" class="btn btn-default">Process</button>
+                    </form>
+                </div>
+
+                <div class="col-sm-4 pre-scrollable" id="scrollable">
+                    <div ng-if="results" class="col-xs-12" ng-repeat="result in results">
+                        <span><strong>{{result.name}}</strong></span> <span>({{result.coordinates.longitude}}, {{result.coordinates.latitude}})</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div id="map-chart" class="col-xs-10"/>
+            </div>
+        </div>
+    </div>
+
+    <!--<div class="row" ng-repeat="concept in showedConcepts track by concept.id">-->
+    <!--<view-concept class="col-xs-height"></view-concept>-->
+    <!--</div>-->
+</div>
+
+</body>
+</html>
