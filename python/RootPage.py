@@ -6,15 +6,15 @@ import requests
 from bottle import route, request, run, static_file, response
 
 # Configuration
-from python.XmlStrategies import GenericItemStrategy
+from python.XmlStrategies import GenericItemStrategy, PersonStrategy, LocationStrategy
 
 nerdLocation = "http://cloud.science-miner.com/nerd/service/processNERDQuery"
 geoLocationLocation = "api.geonames.org/search?username=demo&q="
 
 strategies = {
-    # 'person': PersonStrategy(),
-    'generic': GenericItemStrategy()
-    # 'location': LocationStrategy(),
+    'person': PersonStrategy(),
+    'generic': GenericItemStrategy(),
+    'location': LocationStrategy()
 }
 
 
@@ -138,7 +138,7 @@ def teiBuilderNerd():
             strategy = strategies.get(key)
             if strategy is None:
                 strategy = strategies['generic']
-            standOff.append(strategy.transform(annotations[key], type, textId))
+            standOff.append(strategy.transform(annotations[key], key, textId))
 
         string = ET.tostring(root, encoding="utf8", method='xml')
 
