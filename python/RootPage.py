@@ -1,5 +1,6 @@
 import hashlib
 import xml.etree.ElementTree as ET
+from sys import argv
 
 import requests
 from bottle import route, request, run, static_file, response
@@ -141,4 +142,4 @@ def teiBuilderNerd():
         return string
 
 
-run(host='localhost', port=8080, debug=True)
+run(host='0.0.0.0', port=argv[1], debug=True)
