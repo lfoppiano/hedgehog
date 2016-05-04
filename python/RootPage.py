@@ -6,9 +6,16 @@ import requests
 from bottle import route, request, run, static_file, response
 
 # Configuration
+from python.XmlStrategies import GenericItemStrategy
 
 nerdLocation = "http://cloud.science-miner.com/nerd/service/processNERDQuery"
 geoLocationLocation = "api.geonames.org/search?username=demo&q="
+
+strategies = {
+    # 'person': PersonStrategy(),
+    'generic': GenericItemStrategy()
+    # 'location': LocationStrategy(),
+}
 
 
 @route('/info')
@@ -111,35 +118,41 @@ def teiBuilderNerd():
     if r.status_code == 200:
         nerdResponse = r.json()
         tmpText = nerdResponse['text']
-        m = hashlib.md5();
+        m = hashlib.md5()
         m.update(tmpText.encode('utf-8'))
-        p = ET.SubElement(body, "p", attrib={"xml:id": m.hexdigest()})
+        textId = m.hexdigest()
+        p = ET.SubElement(body, "p", attrib={"xml:id": textId})
         p.text = tmpText
 
         annotations = {}
 
         if 'entities' in nerdResponse.keys():
             for entity in nerdResponse['entities']:
-                type = entity['type']
+                type = str(entity['type']).lower()
                 if type not in annotations.keys():
                     annotations[type] = []
 
                 annotations[type].append(entity)
 
         for key in annotations.keys():
-            listAnnotation = ET.SubElement(standOff, "listAnnotation", attrib={"type": key})
-            for element in annotations[key]:
-                annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
-
-                ET.SubElement(annotationBlock, "p").text = element['rawName']
-                ET.SubElement(annotationBlock, "span", attrib={"xml:id": "",
-                                                               "from": "#string-range(//p[@xml:id='" + m.hexdigest() + "']," +
-                                                                       str(element['offsetStart']) + ","
-                                                                       + str(element['offsetEnd']) + ")"})
+            strategy = strategies.get(key)
+            if strategy is None:
+                strategy = strategies['generic']
+            standOff.append(strategy.transform(annotations[key], type, textId))
 
         string = ET.tostring(root, encoding="utf8", method='xml')
 
         return string
 
 
-run(host='0.0.0.0', port=argv[1], debug=True)
+if len(argv) == 3:
+    port = argv[2]
+    host = argv[1]
+elif len(argv) == 2:
+    port = argv[1]
+    host = '0.0.0.0'
+else:
+    print("Not enough parameters")
+    exit(-1)
+
+run(host=host, port=port, debug=True)
