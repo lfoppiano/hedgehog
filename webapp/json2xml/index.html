@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="json2xml">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+    <meta http-equiv="Content-Language" content="en-uk"/>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+          integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+    <script src="angular.js"></script>
+</head>
+<body>
+
+<script>
+    var json2xml = angular.module('json2xml', ['controllers']);
+
+    var controllers = angular.module('controllers', []);
+
+    controllers.controller('formCntr', function ($scope, $http) {
+        $scope.process = function (text) {
+
+            if (text != undefined || text != null) {
+
+                $http(
+                        {
+                            method: 'POST',
+                            url: '/nerd',
+                            data: {"text": text},
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/xml'
+                            }
+                        }
+                ).then(
+                        function success(response) {
+                            $scope.results = response.data;
+                        },
+                        function failure(error) {
+                            $scope.results = error;
+                        }
+                );
+
+            } else {
+                $scope.results = "Please enter something in the form."
+            }
+        }
+    });
+
+
+</script>
+
+<div id="wrap" class="container" ng-controller="formCntr">
+    <legend>NERD - JSON to XML sandbox :)</legend>
+    <div class="row">
+        <div class="col-xs-10">
+            <form ng-submit="process(text)">
+
+                <div class="form-group">
+                    <label for="text">NERD query</label>
+                    <textarea ng-model="text" type="text" class="form-control" id="text"></textarea>
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12" ng-if="results">{{results}}</div>
+    </div>
+
+    <!--<div class="row" ng-repeat="concept in showedConcepts track by concept.id">-->
+    <!--<view-concept class="col-xs-height"></view-concept>-->
+    <!--</div>-->
+</div>
+
+
+</body>
+</html>

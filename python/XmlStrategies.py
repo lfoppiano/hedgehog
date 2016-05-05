@@ -103,19 +103,18 @@ class PersonStrategy(AbstractStrategy):
 
         return listAnnotation
 
+    def generateOrReuseAnnotationBlock(self, element, elementId, idUniqueList, listAnnotation):
+        if (elementId in idUniqueList.keys()) is False:
+            annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
+            idUniqueList[elementId] = annotationBlock
+            person = ET.SubElement(annotationBlock, "person", attrib={"xml:id": elementId})
+            ET.SubElement(person, "persName").text = element['rawName']
+            isAnnotationBlockNew = True
+        else:
+            annotationBlock = idUniqueList[elementId]
+            isAnnotationBlockNew = False
 
-def generateOrReuseAnnotationBlock(self, element, elementId, idUniqueList, listAnnotation):
-    if (elementId in idUniqueList.keys()) is False:
-        annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
-        idUniqueList[elementId] = annotationBlock
-        person = ET.SubElement(annotationBlock, "person", attrib={"xml:id": elementId})
-        ET.SubElement(person, "persName").text = element['rawName']
-        isAnnotationBlockNew = True
-    else:
-        annotationBlock = idUniqueList[elementId]
-        isAnnotationBlockNew = False
-
-    return annotationBlock, isAnnotationBlockNew
+        return annotationBlock, isAnnotationBlockNew
 
 
 class GenericItemStrategy(AbstractStrategy):
