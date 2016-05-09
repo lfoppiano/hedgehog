@@ -6,8 +6,8 @@ var examples = [
 ];
 
 ehriControllers.controller('textProcessingController', function ($scope, $http) {
-    
-    $scope.example  = function(n) {
+
+    $scope.example = function (n) {
         $scope.text = examples[n];
     };
 
@@ -33,6 +33,10 @@ ehriControllers.controller('textProcessingController', function ($scope, $http) 
 
         var g = svg.append("g");
 
+        var div = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
         // load and display the World
         d3.json("https://s3-us-west-2.amazonaws.com/vida-public/geo/world-topo-min.json", function (error, topology) {
             g.selectAll("path")
@@ -47,7 +51,7 @@ ehriControllers.controller('textProcessingController', function ($scope, $http) 
                 .enter()
                 .append("a")
                 .attr("xlink:href", function (d) {
-                        return "https://www.google.com/search?q=" + d.name;
+                        return "http://www.wikipedia.com/wiki/" + d.name;
                     }
                 )
                 .append("circle")
@@ -57,25 +61,43 @@ ehriControllers.controller('textProcessingController', function ($scope, $http) 
                 .attr("cy", function (d) {
                     return $scope.projection([d.coordinates.longitude, d.coordinates.latitude])[1];
                 })
-                .attr("r", 5)
-                .style("fill", "red");
+                .attr("r", 3)
+                .style("fill", "red")
+                .style("fill-opacity", 0.5)
+                .style("stroke", "red")
+                .style("stroke-opacity", 0.5)
+                .on("mouseover", function (d) {
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    div.html(d.name)
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
 
-            g.selectAll("text")
-                .data($scope.results)
-                .enter()
-                .append("text") // append text
-                .attr("x", function (d) {
-                    return $scope.projection([d.coordinates.longitude, d.coordinates.latitude])[0];
                 })
-                .attr("y", function (d) {
-                    return $scope.projection([d.coordinates.longitude, d.coordinates.latitude])[1];
-                })
-                .attr("dy", -7) // set y position of bottom of text
-                .style("fill", "black") // fill the text with the colour black
-                .attr("text-anchor", "middle") // set anchor y justification
-                .text(function (d) {
-                    return d.name;
+                .on("mouseout", function (d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
                 });
+
+
+            // g.selectAll("text")
+            //     .data($scope.results)
+            //     .enter()
+            //     .append("text") // append text
+            //     .attr("x", function (d) {
+            //         return $scope.projection([d.coordinates.longitude, d.coordinates.latitude])[0];
+            //     })
+            //     .attr("y", function (d) {
+            //         return $scope.projection([d.coordinates.longitude, d.coordinates.latitude])[1];
+            //     })
+            //     .attr("dy", -7) // set y position of bottom of text
+            //     .style("fill", "black") // fill the text with the colour black
+            //     .attr("text-anchor", "middle") // set anchor y justification
+            //     .text(function (d) {
+            //         return d.name;
+            //     });
         });
 
 
@@ -83,11 +105,11 @@ ehriControllers.controller('textProcessingController', function ($scope, $http) 
         var zoom = d3.behavior.zoom()
             .on("zoom", function () {
                 g.attr("transform", "translate(" +
-                    d3.event.translate.join(",") + ")scale(" + d3.event.scale + ")");
-                g.selectAll("circle")
-                    .attr("d", path.projection($scope.projection));
-                g.selectAll("path")
-                    .attr("d", path.projection($scope.projection));
+                    d3.event.translate + ")scale(" + d3.event.scale + ")");
+                /*g.selectAll("circle")
+                 .attr("d", path.projection($scope.projection));*/
+                /*g.selectAll("path")
+                 .attr("d", path.projection($scope.projection));*/
             });
 
         svg.call(zoom)
