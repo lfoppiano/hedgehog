@@ -11,6 +11,10 @@
           integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
 
     <script src="angular.js"></script>
+    <script src="vkbeautify.0.99.00.beta.js"></script>
+    <!--<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;lang=xml" defer="defer"></script>-->
+    <!--<script src="https://google-code-prettify.googlecode.com/svn/loader/prettify.js"></script>-->
+    <!--<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>-->
 </head>
 <body>
 
@@ -36,7 +40,7 @@
                         }
                 ).then(
                         function success(response) {
-                            $scope.results = response.data;
+                            $scope.results = vkbeautify.xml(response.data);
                         },
                         function failure(error) {
                             $scope.results = error;
@@ -68,12 +72,10 @@
     </div>
 
     <div class="row">
-        <div class="col-xs-12" ng-if="results">{{results}}</div>
+        <div class="col-xs-12" ng-if="results">
+            <pre>{{results}}</pre>
+        </div>
     </div>
-
-    <!--<div class="row" ng-repeat="concept in showedConcepts track by concept.id">-->
-    <!--<view-concept class="col-xs-height"></view-concept>-->
-    <!--</div>-->
 </div>
 
 
