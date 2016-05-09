@@ -59,16 +59,19 @@
 <div id="wrap" class="container" ng-controller="formCntr">
     <legend>NERD - JSON to XML sandbox :)</legend>
     <div class="row">
-        <div class="col-xs-10">
-            <form ng-submit="process(text)">
-
+        <div class="col-xs-10"><label for="text">NERD query</label></div>
+    </div>
+    <div class="row">
+        <form ng-submit="process(text)">
+            <div class="col-xs-10">
                 <div class="form-group">
-                    <label for="text">NERD query</label>
                     <textarea ng-model="text" type="text" class="form-control" id="text"></textarea>
                 </div>
+            </div>
+            <div class="col-xs-2">
                 <button type="submit" class="btn btn-default">Submit</button>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 
     <div class="row">
