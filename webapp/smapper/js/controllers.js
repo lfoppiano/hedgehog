@@ -146,8 +146,9 @@ ehriControllers.controller('textProcessingController', function ($scope, $http) 
             }
         ).then(
             function success(response) {
-                console.log(response.data.success)
-                if (response.data.success) {
+                console.log(response.data)
+                console.log(response.data.OK);
+                if (response.data.OK) {
                     $scope.results = response.data.locations;
 
                     $scope.showMap();
