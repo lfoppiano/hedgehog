@@ -142,7 +142,7 @@ ehriControllers.controller('textProcessingController', function ($scope, $http) 
         $http(
             {
                 method: 'POST',
-                url: '/nerd',
+                url: '/geotagNerdLocations',
                 data: textToBeSent
             }
         ).then(

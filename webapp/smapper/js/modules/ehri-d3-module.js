@@ -28,4 +28,5 @@ angular.module('d3', [])
             s.appendChild(scriptTag);
 
             return d3service;
-        }]);
+        }]
+    );

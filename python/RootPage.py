@@ -9,7 +9,7 @@ from bottle import route, request, run, static_file, response
 from python.XmlStrategies import GenericItemStrategy, PersonStrategy, LocationStrategy
 
 nerdLocation = "http://cloud.science-miner.com/nerd/service/processNERDQuery"
-geoLocationLocation = "api.geonames.org/search?username=demo&q="
+geoLocationLocation = "http://api.geonames.org/search"
 
 strategies = {
     'person': PersonStrategy(),
@@ -30,8 +30,8 @@ def server_static(filename):
     return static_file(filename, root='webapp')
 
 
-@route('/nerd', method='POST')
-def nerd():
+@route('/geotagNerdLocations', method='POST')
+def geotagNerdLocations():
     text = request.json["text"]
 
     body = {
@@ -59,22 +59,22 @@ def nerd():
             for entity in nerdResponse['entities']:
                 if entity['type'] == "LOCATION":
                     placeName = entity['rawName']
-                    geo = requests.get(geoLocationLocation, params={'username': 'demo', 'q': placeName})
+                    geo = requests.get(geoLocationLocation,
+                                       params={'maxRows': 1, 'type': 'json', 'username': 'demo', 'q': placeName})
 
                     print("GEO gazetteer response for query " + placeName + ": " + str(geo.status_code))
 
                     if geo.status_code == 200:
-                        locationResponseJson = geo.json();
+                        locationResponseJson = geo.json()['geonames']
                         for location in locationResponseJson:
-                            item = locationResponseJson[location][0];
                             geoLocations.append(
                                 {
                                     'rawName': location,
-                                    'name': item['name'],
-                                    'country': item['countryCode'],
+                                    'name': location['name'],
+                                    'country': location['countryName'],
                                     'coordinates': {
-                                        'longitude': item['longitude'],
-                                        'latitude': item['latitude']
+                                        'longitude': location['lng'],
+                                        'latitude': location['lat']
                                     }
                                 }
                             );
