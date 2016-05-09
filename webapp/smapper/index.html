@@ -60,13 +60,13 @@
                     </form>
                 </div>
 
-                <div class="col-sm-4 pre-scrollable" id="scrollable">
+                <div class="col-sm-4 pre-scrollable" id="scrollable" ng-if="results">
                     <div ng-if="results" class="col-xs-12" ng-repeat="result in results">
                         <span><strong>{{result.name}}</strong></span> <span>({{result.coordinates.longitude}}, {{result.coordinates.latitude}})</span>
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" ng-if="results">
                 <div id="map-chart" class="col-xs-10"/>
             </div>
         </div>

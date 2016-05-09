@@ -70,7 +70,6 @@ ehriControllers.controller('textProcessingController', function ($scope, $http) 
         });
 
 
-
         // zoom and pan
         var zoom = d3.behavior.zoom()
             .on("zoom", function () {
@@ -87,51 +86,51 @@ ehriControllers.controller('textProcessingController', function ($scope, $http) 
 
     /*$scope.showLocations = function () {
 
-        if (!$scope.results) {
-            return;
-        }
+     if (!$scope.results) {
+     return;
+     }
 
-        var g = d3.select("svg").select("g");
-        var path = g.select("something");
+     var g = d3.select("svg").select("g");
+     var path = g.select("something");
 
-        console.log(path);
-        path.selectAll("circle")
-            .data($scope.results)
-            .enter()
-            .append("a")
-            .attr("xlink:href", function (d) {
-                    return "https://www.google.com/search?q=" + d.name;
-                }
-            )
-            .append("circle")
-            .attr("cx", function (d) {
-                return $scope.projection([d.coordinates.longitude, d.coordinates.latitude])[0];
-            })
-            .attr("cy", function (d) {
-                return $scope.projection([d.coordinates.longitude, d.coordinates.latitude])[1];
-            })
-            .attr("r", 5)
-            .style("fill", "red");
+     console.log(path);
+     path.selectAll("circle")
+     .data($scope.results)
+     .enter()
+     .append("a")
+     .attr("xlink:href", function (d) {
+     return "https://www.google.com/search?q=" + d.name;
+     }
+     )
+     .append("circle")
+     .attr("cx", function (d) {
+     return $scope.projection([d.coordinates.longitude, d.coordinates.latitude])[0];
+     })
+     .attr("cy", function (d) {
+     return $scope.projection([d.coordinates.longitude, d.coordinates.latitude])[1];
+     })
+     .attr("r", 5)
+     .style("fill", "red");
 
-        path.parent().selectAll("text")
-            .data($scope.results)
-            .enter()
-            .append("text") // append text
-            .attr("x", function (d) {
-                return $scope.projection([d.coordinates.longitude, d.coordinates.latitude])[0];
-            })
-            .attr("y", function (d) {
-                return $scope.projection([d.coordinates.longitude, d.coordinates.latitude])[1];
-            })
-            .attr("dy", -7) // set y position of bottom of text
-            .style("fill", "black") // fill the text with the colour black
-            .attr("text-anchor", "middle") // set anchor y justification
-            .text(function (d) {
-                return d.name;
-            });
+     path.parent().selectAll("text")
+     .data($scope.results)
+     .enter()
+     .append("text") // append text
+     .attr("x", function (d) {
+     return $scope.projection([d.coordinates.longitude, d.coordinates.latitude])[0];
+     })
+     .attr("y", function (d) {
+     return $scope.projection([d.coordinates.longitude, d.coordinates.latitude])[1];
+     })
+     .attr("dy", -7) // set y position of bottom of text
+     .style("fill", "black") // fill the text with the colour black
+     .attr("text-anchor", "middle") // set anchor y justification
+     .text(function (d) {
+     return d.name;
+     });
 
 
-    };*/
+     };*/
 
     $scope.process = function (text) {
 
@@ -147,11 +146,12 @@ ehriControllers.controller('textProcessingController', function ($scope, $http) 
             }
         ).then(
             function success(response) {
-                $scope.results = response.data.locations;
+                console.log(response.data.success)
+                if (response.data.success) {
+                    $scope.results = response.data.locations;
 
-                $scope.showMap();
-                // $scope.showLocations();
-
+                    $scope.showMap();
+                }
             },
             function failure(error) {
                 $scope.results = error;

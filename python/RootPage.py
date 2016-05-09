@@ -32,6 +32,10 @@ def server_static(filename):
 
 @route('/geotagNerdLocations', method='POST')
 def geotagNerdLocations():
+    success = False
+    if 'text' not in request.json:
+        return {'OK': success}
+
     text = request.json["text"]
 
     body = {
@@ -81,13 +85,16 @@ def geotagNerdLocations():
                                         }
                                     }
                                 )
+                                success = True
                     else:
                         geoLocations[location] = "no location resolved in the Gazetteer";
+                        success = False
 
     else:
         geoLocations = {'error': r.status_code}
+        success = False
 
-    return {'locations': geoLocations}
+    return {'OK': success, 'locations': geoLocations}
 
 
 @route('/nerd', method='POST')
