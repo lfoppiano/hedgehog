@@ -65,19 +65,22 @@ def geotagNerdLocations():
                     print("GEO gazetteer response for query " + placeName + ": " + str(geo.status_code))
 
                     if geo.status_code == 200:
-                        locationResponseJson = geo.json()['geonames']
-                        for location in locationResponseJson:
-                            geoLocations.append(
-                                {
-                                    'rawName': location,
-                                    'name': location['name'],
-                                    'country': location['countryName'],
-                                    'coordinates': {
-                                        'longitude': location['lng'],
-                                        'latitude': location['lat']
+
+                        locationResponseJson = geo.json()
+                        if 'geonames' in locationResponseJson:
+                            geonames = locationResponseJson['geonames']
+                            for location in geonames:
+                                geoLocations.append(
+                                    {
+                                        'rawName': location,
+                                        'name': location['name'],
+                                        'country': location['countryName'],
+                                        'coordinates': {
+                                            'longitude': location['lng'],
+                                            'latitude': location['lat']
+                                        }
                                     }
-                                }
-                            );
+                                )
                     else:
                         geoLocations[location] = "no location resolved in the Gazetteer";
 
