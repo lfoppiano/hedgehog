@@ -1,6 +1,15 @@
 var ehriControllers = angular.module('ehri-controller', []);
 
+var examples = [
+    "Contains correspondence with, and notes about, the following former prisoners re songs from various prisons: Charewicz, Czarnecka, Kurkiewiczowa, Urbanska, Wanat, Zablocka-Racina, Rodowod, Domanski, Bartkowiak, Ligeza, Godlewski, and Broda first names not given. Also contains information about prison songs from Tarnow, Pawiak, Radom, and Wronki prisons in Poland.",
+    "Selected materials related to concentration camps Bełżec, Treblinka, Chełmno, Majdanek, Auschwitz-Birkenau, Płaszòw, and Gross-Rosen; ghettos in Warsaw, Siedlce, and Limanowa; and the labor camps for Jews in Poznań: testimony of witnesses and suspects, photographs, postcards, letters, certificates of death, travel passes, texts of prayers, staff lists, lists of ex-prisoners, documents of Poland’s military mission in London, daily reports of the Leiter des Ordnungsdienstes (Head of Order Service) of the Warsaw ghetto."
+];
+
 ehriControllers.controller('textProcessingController', function ($scope, $http) {
+    
+    $scope.example  = function(n) {
+        $scope.text = examples[n];
+    };
 
     $scope.showMap = function () {
         var width = 1000, height = 500;
