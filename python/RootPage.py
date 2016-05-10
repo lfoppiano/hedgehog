@@ -52,7 +52,7 @@ def geotagNerdLocations():
     }
 
     r = requests.post(nerdLocation, json=body)
-    print("NERD response: " + str(r.status_code))
+    print("NERD response: " + str(r.status_code) + " in " + str(r.elapsed))
 
     geoLocations = []
 
@@ -66,7 +66,8 @@ def geotagNerdLocations():
                     geo = requests.get(geoLocationLocation,
                                        params={'maxRows': 1, 'type': 'json', 'username': 'demo', 'q': placeName})
 
-                    print("GEO gazetteer response for query " + placeName + ": " + str(geo.status_code))
+                    print("GEO gazetteer response for query " + placeName + ": " + str(geo.status_code) + " in "
+                          + str(geo.elapsed))
 
                     if geo.status_code == 200:
 
