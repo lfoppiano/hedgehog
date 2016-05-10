@@ -12,23 +12,28 @@ class AbstractStrategy:
         if not isAnnotationBlockNew:
             return
 
-        listBibl = ET.SubElement(annotationBlock, "listBibl", attrib={"type": "categories"})
+        textClass = ET.SubElement(annotationBlock, "textClass", attrib={"type": "categories"})
         if 'categories' in element.keys():
+            keywords = ET.SubElement(textClass, "keywords")
             for category in element['categories']:
-                biblStruct = ET.SubElement(listBibl, "biblStruct")
+                ET.SubElement(keywords, "term",
+                              attrib={
+                                  'scheme': category['source'],
+                                  'key': str(category["page_id"])
+                              }
+                              ).text = category['category']
 
-                ET.SubElement(biblStruct, "title").text = category['category']
-                ET.SubElement(biblStruct, "publisher").text = category['source']
-                ET.SubElement(biblStruct, "idno").text = str(category["page_id"])
-
-    def processDefinitions(self, annotationBlock, element, isAnnotationBlockNew):
+    def processDefinitions(self, parentBlock, element, isAnnotationBlockNew):
         if not isAnnotationBlockNew:
             return
 
-        listBiblDefinitions = ET.SubElement(annotationBlock, "listBibl", attrib={"type": "definitions"})
         if 'definitions' in element.keys():
-            for category in element['definitions']:
-                ET.SubElement(listBiblDefinitions, "bibl").text = category['definition']
+            for definition in element['definitions']:
+                attribs = {}
+                if 'source' in definition:
+                    attribs = {'resp': definition['source']}
+
+                gloss = ET.SubElement(parentBlock, "gloss", attrib=attribs).text = definition['definition']
 
     def populateAnnotationBlock(self, annotationBlock, element, elementId, textId):
         offsetStart = element['offsetStart']
@@ -65,7 +70,6 @@ class LocationStrategy(AbstractStrategy):
                                                                                           idUniqueList, listAnnotation)
             self.populateAnnotationBlock(annotationBlock, element, elementId, textId)
             self.processCategories(annotationBlock, element, isAnnotationBlockNew)
-            self.processDefinitions(annotationBlock, element, isAnnotationBlockNew)
 
         return listAnnotation
 
@@ -73,8 +77,9 @@ class LocationStrategy(AbstractStrategy):
         if (elementId in idUniqueList.keys()) is False:
             annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
             idUniqueList[elementId] = annotationBlock
-            person = ET.SubElement(annotationBlock, "place", attrib={"xml:id": elementId})
-            ET.SubElement(person, "placeName").text = element['rawName']
+            place = ET.SubElement(annotationBlock, "place", attrib={"xml:id": elementId})
+            ET.SubElement(place, "placeName").text = element['rawName']
+            self.processDefinitions(place, element, True)
             isAnnotationBlockNew = True
         else:
             annotationBlock = idUniqueList[elementId]
@@ -99,7 +104,7 @@ class PersonStrategy(AbstractStrategy):
                                                                                           idUniqueList, listAnnotation)
             self.populateAnnotationBlock(annotationBlock, element, elementId, textId)
             self.processCategories(annotationBlock, element, isAnnotationBlockNew)
-            self.processDefinitions(annotationBlock, element, isAnnotationBlockNew)
+            # self.processDefinitions(annotationBlock, element, isAnnotationBlockNew)
 
         return listAnnotation
 
@@ -109,12 +114,95 @@ class PersonStrategy(AbstractStrategy):
             idUniqueList[elementId] = annotationBlock
             person = ET.SubElement(annotationBlock, "person", attrib={"xml:id": elementId})
             ET.SubElement(person, "persName").text = element['rawName']
+            self.processDefinitions(person, element, True)
             isAnnotationBlockNew = True
         else:
             annotationBlock = idUniqueList[elementId]
             isAnnotationBlockNew = False
 
         return annotationBlock, isAnnotationBlockNew
+
+
+class PeriodStrategy(AbstractStrategy):
+    type = "period"
+
+    def transform(self, elements, type, textId):
+        idUniqueList = {}
+
+        listAnnotation = ET.Element("listAnnotation",
+                                    attrib={"type": str(type).lower()})
+        for element in elements:
+            elementId = self.calculateElementId(element)
+            # print(element['rawName'] + ' -> ' + elementId);
+
+            (annotationBlock, isAnnotationBlockNew) = self.generateOrReuseAnnotationBlock(element, elementId,
+                                                                                          idUniqueList, listAnnotation)
+            self.populateAnnotationBlock(annotationBlock, element, elementId, textId)
+            self.processCategories(annotationBlock, element, isAnnotationBlockNew)
+            # self.processDefinitions(annotationBlock, element, isAnnotationBlockNew)
+
+        return listAnnotation
+
+    def generateOrReuseAnnotationBlock(self, element, elementId, idUniqueList, listAnnotation):
+        if (elementId in idUniqueList.keys()) is False:
+            annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
+            idUniqueList[elementId] = annotationBlock
+            date = ET.SubElement(annotationBlock, "date", attrib={"xml:id": elementId})
+            ET.SubElement(date, "date").text = element['rawName']
+            self.processDefinitions(date, element, True)
+            isAnnotationBlockNew = True
+        else:
+            annotationBlock = idUniqueList[elementId]
+            isAnnotationBlockNew = False
+
+        return annotationBlock, isAnnotationBlockNew
+
+
+class EventStrategy(AbstractStrategy):
+    type = "event"
+
+    def transform(self, elements, type, textId):
+        idUniqueList = {}
+
+        listAnnotation = ET.Element("listAnnotation",
+                                    attrib={"type": str(type).lower()})
+        for element in elements:
+            elementId = self.calculateElementId(element)
+            # print(element['rawName'] + ' -> ' + elementId);
+
+            (annotationBlock, isAnnotationBlockNew) = self.generateOrReuseAnnotationBlock(element, elementId,
+                                                                                          idUniqueList, listAnnotation)
+            self.populateAnnotationBlock(annotationBlock, element, elementId, textId)
+            self.processCategories(annotationBlock, element, isAnnotationBlockNew)
+            # self.processDefinitions(annotationBlock, element, isAnnotationBlockNew)
+
+        return listAnnotation
+
+    def generateOrReuseAnnotationBlock(self, element, elementId, idUniqueList, listAnnotation):
+        if (elementId in idUniqueList.keys()) is False:
+            annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
+            idUniqueList[elementId] = annotationBlock
+            event = ET.SubElement(annotationBlock, "event", attrib={"xml:id": elementId})
+            ET.SubElement(event, "head").text = element['rawName']
+            self.processDefinitions(event, element, True)
+            isAnnotationBlockNew = True
+        else:
+            annotationBlock = idUniqueList[elementId]
+            isAnnotationBlockNew = False
+
+        return annotationBlock, isAnnotationBlockNew
+
+    def processDefinitions(self, parentBlock, element, isAnnotationBlockNew):
+        if not isAnnotationBlockNew:
+            return
+
+        if 'definitions' in element.keys():
+            for definition in element['definitions']:
+                attribs = {}
+                if 'source' in definition:
+                    attribs = {'resp': definition['source']}
+
+                gloss = ET.SubElement(parentBlock, "desc", attrib=attribs).text = definition['definition']
 
 
 class GenericItemStrategy(AbstractStrategy):
@@ -134,7 +222,7 @@ class GenericItemStrategy(AbstractStrategy):
                                                                                           idUniqueList, listAnnotation)
             self.populateAnnotationBlock(annotationBlock, element, elementId, textId)
             self.processCategories(annotationBlock, element, isAnnotationBlockNew)
-            self.processDefinitions(annotationBlock, element, isAnnotationBlockNew)
+            # self.processDefinitions(annotationBlock, element, isAnnotationBlockNew)
 
         return listAnnotation
 
@@ -142,7 +230,10 @@ class GenericItemStrategy(AbstractStrategy):
         if (elementId in idUniqueList.keys()) is False:
             annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
             idUniqueList[elementId] = annotationBlock
-            ET.SubElement(annotationBlock, "p", attrib={"xml:id": elementId}).text = element['rawName']
+            term = ET.SubElement(annotationBlock, "term",
+                                 attrib={"xml:id": elementId, "type": "preferred"})
+            term.text = element['rawName']
+            self.processDefinitions(term, element, True)
             isAnnotationBlockNew = True
         else:
             annotationBlock = idUniqueList[elementId]
