@@ -19,11 +19,21 @@
 <body>
 
 <script>
+
+    var examples = [
+        "The holocaust was a problem in the second world war... Germany was strong and heavy. We are going to England tomorrow. In March we will go to Legoland. When is the Nobel Prize for the cleaning? When they went to England, last time, it was nice. The person of John Smith was a great commander. John Doe was found laying down. George Washington was an old person.",
+        "The Holocaust (from the Greek ὁλόκαυστος holókaustos: hólos, \"whole\" and kaustós, \"burnt\"),[2] also known as the Shoah (Hebrew: השואה, HaShoah, \"the catastrophe\"), was a genocide in which Adolf Hitler's Nazi Germany and its collaborators killed about six million Jews.[3] The victims included 1.5 million children[4] and represented about two-thirds of the nine million Jews who had resided in Europe.[5] Some definitions of the Holocaust include the additional five million non-Jewish victims of Nazi mass murders, bringing the total to about 11 million. Killings took place throughout Nazi Germany and German-occupied territories.[6] From 1941 to 1945, Jews were systematically murdered in one of the deadliest genocides in history, which was part of a broader aggregate of acts of oppression and killings of various ethnic and political groups in Europe by the Nazi regime.[7] Every arm of Germany's bureaucracy was involved in the logistics and the carrying out of the genocide. Other victims of Nazi crimes included ethnic Poles, Soviet citizens and Soviet POWs, other Slavs, Romanis, communists, homosexuals, Jehovah's Witnesses and the mentally and physically disabled.[8][9] A network of about 42,500 facilities in Germany and German-occupied territories was used to concentrate victims for slave labor, mass murder, and other human rights abuses.[10] Over 200,000 people are estimated to have been Holocaust perpetrators.[11] The persecution and genocide were carried out in stages, culminating in what Nazis termed the \"Final Solution to the Jewish Question\" (die Endlösung der Judenfrage), an agenda to exterminate Jews in Europe. Initially the German government passed laws to exclude Jews from civil society, most prominently the Nuremberg Laws of 1935. Nazis established a network of concentration camps starting in 1933 and ghettos following the outbreak of World War II in 1939. In 1941, as Germany conquered new territory in eastern Europe, specialized paramilitary units called Einsatzgruppen murdered around two million Jews and \"partisans\",[clarification needed] often in mass shootings. By the end of 1942, victims were being regularly transported by freight trains to extermination camps where, if they survived the journey, most were systematically killed in gas chambers. This continued until the end of World War II in Europe in April–May 1945.Jewish armed resistance was limited. The most notable exception was the Warsaw Ghetto Uprising of 1943, when thousands of poorly-armed Jewish fighters held the Waffen-SS at bay for four weeks. An estimated 20–30,000 Jewish partisans actively fought against the Nazis and their collaborators in Eastern Europe.[12][13] French Jews took part in the French Resistance, which conducted a guerilla campaign against the Nazis and Vichy French authorities. Over a hundred armed Jewish uprisings took place.[14]"
+    ];
+
     var json2xml = angular.module('json2xml', ['controllers']);
 
     var controllers = angular.module('controllers', []);
 
     controllers.controller('formCntr', function ($scope, $http) {
+        $scope.example = function (n) {
+            $scope.text = examples[n];
+        };
+
         $scope.process = function (text) {
 
             if (text != undefined || text != null) {
@@ -63,7 +73,20 @@
     </div>
     <div class="row">
         <form ng-submit="process(text)">
-            <div class="col-xs-10">
+            <div class="col-sm-2">
+                <div class="row">
+                    <div class="col-xs-10">
+                        <a ng-click="example(0)">Example 1</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-10">
+                        <a ng-click="example(1)">Example 2</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-8">
                 <div class="form-group">
                     <textarea ng-model="text" type="text" class="form-control" id="text"></textarea>
                 </div>
@@ -72,6 +95,8 @@
                 <button type="submit" class="btn btn-default">Submit</button>
             </div>
         </form>
+
+
     </div>
 
     <div class="row">
