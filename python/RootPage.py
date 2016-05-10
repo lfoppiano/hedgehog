@@ -64,7 +64,7 @@ def geotagNerdLocations():
                 if entity['type'] == "LOCATION":
                     placeName = entity['rawName']
                     geo = requests.get(geoLocationLocation,
-                                       params={'maxRows': 1, 'type': 'json', 'username': 'demo', 'q': placeName})
+                                       params={'maxRows': 1, 'type': 'json', 'username': 'lfoppiano', 'q': placeName})
 
                     print("GEO gazetteer response for query " + placeName + ": " + str(geo.status_code) + " in "
                           + str(geo.elapsed))
