@@ -64,7 +64,7 @@ def geotagNerdLocations():
         if 'entities' in nerdResponse.keys():
             for entity in nerdResponse['entities']:
                 if entity['type'] == "LOCATION":
-                    placeName = entity['rawName']
+                    placeName = entity['preferredTerm']
                     geo = requests.get(geoLocationLocation,
                                        params={'maxRows': 1, 'type': 'json', 'username': 'lfoppiano', 'q': placeName})
 
