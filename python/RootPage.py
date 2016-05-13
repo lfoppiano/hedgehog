@@ -72,8 +72,8 @@ def geotagNerdLocations():
                     geo = requests.get(geoLocationLocation,
                                        params={'maxRows': 1, 'type': 'json', 'username': 'lfoppiano', 'q': placeName})
 
-                    print("GEO gazetteer response for query " + placeName + ": " + str(geo.status_code) + " in "
-                          + str(geo.elapsed))
+                    print("GEO gazetteer response for query " + placeName + ": " + str(geo.status_code) + " in " + str(
+                        geo.elapsed))
 
                     if geo.status_code == 200:
 
