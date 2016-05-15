@@ -69,6 +69,8 @@ def geotagNerdLocations():
                     else:
                         placeName = entity['rawName']
 
+                    isCountry = checkIfCountry(entity)
+
                     geo = requests.get(geoLocationLocation,
                                        params={'maxRows': 1, 'type': 'json', 'username': 'lfoppiano', 'q': placeName})
 
@@ -83,8 +85,9 @@ def geotagNerdLocations():
                             for location in geonames:
                                 geoLocations.append(
                                     {
-                                        'rawName': location,
+                                        'json': location,
                                         'name': location['name'],
+                                        'isCountry': isCountry,
                                         'country': location['countryName'],
                                         'coordinates': {
                                             'longitude': location['lng'],
@@ -101,6 +104,14 @@ def geotagNerdLocations():
         success = False
 
     return {'OK': success, 'locations': geoLocations}
+
+
+def checkIfCountry(location):
+    if 'sense' in location and 'fineSense' in location['sense']:
+        if 'country' in location['sense']['fineSense']:
+            return True
+
+    return False
 
 
 def populateTeiHeader(teiHeader, titleText):

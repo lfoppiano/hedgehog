@@ -39,6 +39,7 @@ ehriControllers.controller('textProcessingController', function ($scope, $http) 
 
         // load and display the World
         d3.json("https://s3-us-west-2.amazonaws.com/vida-public/geo/world-topo-min.json", function (error, topology) {
+            // d3.json("http://thenmap-api.herokuapp.com/v1/world/geo|data/?geo_type=topojson", function (error, topology) {
             g.selectAll("path")
                 .data(topojson.object(topology, topology.objects.countries)
                     .geometries)
@@ -62,9 +63,20 @@ ehriControllers.controller('textProcessingController', function ($scope, $http) 
                     return $scope.projection([d.coordinates.longitude, d.coordinates.latitude])[1];
                 })
                 .attr("r", 3)
-                .style("fill", "red")
+                .style("fill", function (d) {
+                    if (d['isCountry']) {
+                        return "blue";
+                    }
+                    return "red";
+                })
                 .style("fill-opacity", 0.5)
-                .style("stroke", "red")
+                .style("stroke", function (d) {
+                    if (d['isCountry']) {
+                        return "blue";
+                    }
+
+                    return "red";
+                })
                 .style("stroke-opacity", 0.5)
                 .on("mouseover", function (d) {
                     div.transition()
@@ -177,8 +189,8 @@ ehriControllers.controller('textProcessingController', function ($scope, $http) 
             }
         ).then(
             function success(response) {
-                console.log(response.data)
-                console.log(response.data.OK);
+                // console.log(response.data)
+                // console.log(response.data.OK);
                 if (response.data.OK) {
                     $scope.results = response.data.locations;
 
