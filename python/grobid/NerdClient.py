@@ -17,8 +17,7 @@ class NerdClient:
             "format": "JSON",
             "customisation": "generic"
         }
-        requests.headers['Content-Type'] = 'application/json; charset=UTF-8'
-        r = requests.post(self.nerdLocation, json=body)
+        r = requests.post(self.nerdLocation, json=body, headers={'Content-Type': 'application/json; charset=UTF-8'})
         # print("NERD response: " + str(r.status_code) + " in " + str(r.elapsed))
 
         statusCode = r.status_code
