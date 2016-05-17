@@ -7,9 +7,11 @@ from bottle import route, request, run, static_file, response
 
 # Configuration
 from XmlStrategies import GenericItemStrategy, PersonStrategy, LocationStrategy, PeriodStrategy, EventStrategy
+from grobid.NerdClient import NerdClient
 
-nerdLocation = "http://cloud.science-miner.com/nerd/service/processNERDQuery"
 geoLocationLocation = "http://api.geonames.org/search"
+
+nerdClient = NerdClient()
 
 strategies = {
     'person': PersonStrategy(),
@@ -22,7 +24,7 @@ strategies = {
 
 @route('/info')
 def info():
-    returnText = "Configuration: \n\t- nerdLocation: " + nerdLocation + " \n\t- Geo Location: " + geoLocationLocation
+    returnText = "Configuration: \n\t- nerdLocation: " + nerdClient.getNerdLocation() + " \n\t- Geo Location: " + geoLocationLocation
 
     return returnText
 
@@ -40,27 +42,10 @@ def geotagNerdLocations():
 
     text = request.json["text"]
 
-    body = {
-        "text": text,
-        "language": {
-            "lang": "en"
-        },
-        "entities": [],
-        "resultLanguages": ["fr", "de"],
-        "onlyNER": "false",
-        "sentence": "false",
-        "format": "JSON",
-        "customisation": "generic"
-    }
-
-    r = requests.post(nerdLocation, json=body)
-    print("NERD response: " + str(r.status_code) + " in " + str(r.elapsed))
-
+    nerdResponse, statusCode = nerdClient.processText(text)
     geoLocations = []
 
-    if r.status_code == 200:
-        nerdResponse = r.json()
-
+    if statusCode == 200:
         if 'entities' in nerdResponse.keys():
             for entity in nerdResponse['entities']:
                 if entity['type'] == "LOCATION":
@@ -100,11 +85,10 @@ def geotagNerdLocations():
                         geoLocations[location] = "no location resolved in the Gazetteer";
 
     else:
-        geoLocations = {'error': r.status_code}
+        geoLocations = {'error': statusCode}
         success = False
 
     return {'OK': success, 'locations': geoLocations}
-
 
 def checkIfCountry(location):
     if 'sense' in location and 'fineSense' in location['sense']:
@@ -125,36 +109,19 @@ def populateTeiHeader(teiHeader, titleText):
 
 @route('/nerd', method='POST')
 def teiBuilderNerd():
+    response.headers['Content-Type'] = 'application/xml'
     text = request.json["text"]
 
-    l = []
-    body = {
-        "text": text,
-        "language": {
-            "lang": "en"
-        },
-        "entities": l,
-        "resultLanguages": ["fr", "de"],
-        "onlyNER": "false",
-        "sentence": "false",
-        "format": "JSON",
-        "customisation": "generic"
-    }
+    nerdResponse, statusCode = nerdClient.processText(text)
 
-    r = requests.post(nerdLocation, json=body)
+    if nerdResponse:
+        root = ET.Element("TEI")
+        teiHeader = ET.SubElement(root, "teiHeader")
+        populateTeiHeader(teiHeader, 'Named Entities recognition and disambiguation (NERD), XML-TEI output');
+        standOff = ET.SubElement(root, "standOff")
+        text = ET.SubElement(root, "text")
+        body = ET.SubElement(text, "body")
 
-    response.headers['Content-Type'] = 'xml/application'
-    print("NERD response: " + str(r.status_code))
-
-    root = ET.Element("TEI")
-    teiHeader = ET.SubElement(root, "teiHeader")
-    populateTeiHeader(teiHeader, 'Named Entities recognition and disambiguation (NERD), XML-TEI output');
-    standOff = ET.SubElement(root, "standOff")
-    text = ET.SubElement(root, "text")
-    body = ET.SubElement(text, "body")
-
-    if r.status_code == 200:
-        nerdResponse = r.json()
         tmpText = nerdResponse['text']
         m = hashlib.md5()
         m.update(tmpText.encode('utf-8'))
@@ -164,13 +131,14 @@ def teiBuilderNerd():
 
         annotations = {}
 
-        if 'entities' in nerdResponse.keys():
-            for entity in nerdResponse['entities']:
-                type = str(entity['type']).lower()
-                if type not in annotations.keys():
-                    annotations[type] = []
+        if statusCode == 200:
+            if 'entities' in nerdResponse.keys():
+                for entity in nerdResponse['entities']:
+                    type = str(entity['type']).lower()
+                    if type not in annotations.keys():
+                        annotations[type] = []
 
-                annotations[type].append(entity)
+                    annotations[type].append(entity)
 
         for key in annotations.keys():
             strategy = strategies.get(key)
