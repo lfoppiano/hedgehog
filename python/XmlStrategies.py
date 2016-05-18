@@ -35,6 +35,11 @@ class AbstractStrategy:
 
                 gloss = ET.SubElement(parentBlock, "gloss", attrib=attribs).text = definition['definition']
 
+    def addIdno(self, element, parent):
+        if 'wikipediaExternalRef' in element:
+            idno = ET.SubElement(parent, "idno", attrib={'source': 'wikipedia-en'})
+            idno.text = element['wikipediaExternalRef']
+
     def populateAnnotationBlock(self, annotationBlock, element, elementId, textId):
         offsetStart = element['offsetStart']
         offsetEnd = element['offsetEnd']
@@ -84,6 +89,7 @@ class LocationStrategy(AbstractStrategy):
             idUniqueList[elementId] = annotationBlock
             place = ET.SubElement(annotationBlock, "place", attrib={"xml:id": elementId})
             self.addTerms(element, place, 'placeName')
+            self.addIdno(element, place)
             self.processDefinitions(place, element, True)
             isAnnotationBlockNew = True
         else:
@@ -119,6 +125,7 @@ class PersonStrategy(AbstractStrategy):
             idUniqueList[elementId] = annotationBlock
             person = ET.SubElement(annotationBlock, "person", attrib={"xml:id": elementId})
             self.addTerms(element, person, 'persName')
+            self.addIdno(element, person)
             self.processDefinitions(person, element, True)
             isAnnotationBlockNew = True
         else:
@@ -154,6 +161,7 @@ class PeriodStrategy(AbstractStrategy):
             idUniqueList[elementId] = annotationBlock
             date = ET.SubElement(annotationBlock, "date", attrib={"xml:id": elementId})
             self.addTerms(element, annotationBlock, 'date')
+            self.addIdno(element, date)
             self.processDefinitions(date, element, True)
             isAnnotationBlockNew = True
         else:
@@ -189,6 +197,7 @@ class EventStrategy(AbstractStrategy):
             idUniqueList[elementId] = annotationBlock
             event = ET.SubElement(annotationBlock, "event", attrib={"xml:id": elementId})
             self.addTerms(element, event, 'head')
+            self.addIdno(element, event)
             self.processDefinitions(event, element, True)
             isAnnotationBlockNew = True
         else:
@@ -237,7 +246,9 @@ class GenericItemStrategy(AbstractStrategy):
             idUniqueList[elementId] = annotationBlock
             term = ET.SubElement(annotationBlock, "term", attrib={"xml:id": elementId})
             self.addTerms(element, term, 'term')
+            self.addIdno(element, term)
             self.processDefinitions(term, element, True)
+
             isAnnotationBlockNew = True
         else:
             annotationBlock = idUniqueList[elementId]
