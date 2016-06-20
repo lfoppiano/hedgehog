@@ -134,11 +134,12 @@ def teiBuilderNerd():
         if statusCode == 200:
             if 'entities' in nerdResponse.keys():
                 for entity in nerdResponse['entities']:
-                    type = str(entity['type']).lower()
-                    if type not in annotations.keys():
-                        annotations[type] = []
+                    if 'type' in entity:
+                        type = str(entity['type']).lower()
+                        if type not in annotations.keys():
+                            annotations[type] = []
 
-                    annotations[type].append(entity)
+                        annotations[type].append(entity)
 
         for key in annotations.keys():
             strategy = strategies.get(key)
