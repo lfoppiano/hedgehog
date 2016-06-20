@@ -48,7 +48,7 @@ def geotagNerdLocations():
     if statusCode == 200:
         if 'entities' in nerdResponse.keys():
             for entity in nerdResponse['entities']:
-                if entity['type'] == "LOCATION":
+                if 'type' in entity and entity['type'] == "LOCATION":
                     if 'preferredTerm' in entity:
                         placeName = entity['preferredTerm']
                     else:
