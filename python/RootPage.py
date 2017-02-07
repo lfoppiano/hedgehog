@@ -7,7 +7,7 @@ from bottle import route, request, run, static_file, response
 
 # Configuration
 from XmlStrategies import GenericItemStrategy, PersonStrategy, LocationStrategy, PeriodStrategy, EventStrategy
-from grobid.NerdClient import NerdClient
+from client.NerdClient import NerdClient
 
 geoLocationLocation = "http://api.geonames.org/search"
 
@@ -68,12 +68,17 @@ def geotagNerdLocations():
                         if 'geonames' in locationResponseJson:
                             geonames = locationResponseJson['geonames']
                             for location in geonames:
+                                if 'countryName' in location:
+                                    countryName = location['countryName']
+                                else:
+                                    countryName = None
+
                                 geoLocations.append(
                                     {
                                         'json': location,
                                         'name': location['name'],
                                         'isCountry': isCountry,
-                                        'country': location['countryName'],
+                                        'country': countryName,
                                         'coordinates': {
                                             'longitude': location['lng'],
                                             'latitude': location['lat']

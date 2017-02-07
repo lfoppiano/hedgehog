@@ -2,7 +2,7 @@ import requests
 
 
 class NerdClient:
-    nerdLocation = "http://traces1.saclay.inria.fr/nerd/service"
+    nerdLocation = "http://cloud.science-miner.com/nerd/service"
     # nerdLocation = "http://.science-miner.com/nerd/service"
     nerdQueryUrl = nerdLocation + "/processNERDQuery"
     erdQueryUrl = nerdLocation + "/processNERDQuery"
