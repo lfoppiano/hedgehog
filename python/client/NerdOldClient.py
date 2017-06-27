@@ -1,26 +1,26 @@
 import requests
 
 
-class NerdClient:
-    nerdLocation = "http://localhost:8090/service"
-    nerdQueryUrl = nerdLocation + "/disambiguate"
-    nerdConceptUrl = nerdLocation + "/kb/concept"
+class NerdOldClient:
+    nerdLocation = "http://cloud.science-miner.com/nerd/service"
+    nerdQueryUrl = nerdLocation + "/processNERDQuery"
 
-    def processText(self, text):
+    def processText(self, text, lang):
         text = text.replace("\n", "").replace("\r", "")
-        
         body = {
             "text": text,
+            "language": {
+                "lang": lang
+            },
             "entities": [],
             "resultLanguages": ["fr", "de", "en"],
             "onlyNER": "false",
-            "sentence": "true",
+            "sentence": "false",
+            "format": "JSON",
             "customisation": "generic"
         }
-
-        files = {"query": str(body)}
-
-        r = requests.post(self.nerdQueryUrl, files=files, headers={'Accept': 'application/json'})
+        r = requests.post(self.nerdQueryUrl, query=body, headers={'Content-Type': 'application/json; charset=UTF-8'})
+        # print("NERD response: " + str(r.status_code) + " in " + str(r.elapsed))
 
         statusCode = r.status_code
         nerdResponse = r.reason
@@ -29,17 +29,8 @@ class NerdClient:
 
         return nerdResponse, statusCode
 
-    def fetchConcept(self, id, lang="en"):
-        url = self.nerdConceptUrl + "/"+id+"?lang="+lang
-        r = requests.get(url, headers={'Accept': 'application/json'})
-
-        statusCode = r.status_code
-        nerdResponse = r.reason
-        if statusCode == 200:
-            nerdResponse = r.json()
-
-        return nerdResponse, statusCode
-
+        def processText(self, text):
+            return processText(text, "en")
 
     def termDisambiguation(self, terms):
         if isinstance(terms, str):

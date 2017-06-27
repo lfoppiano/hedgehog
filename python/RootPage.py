@@ -7,11 +7,11 @@ from bottle import route, request, run, static_file, response
 
 # Configuration
 from XmlStrategies import GenericItemStrategy, PersonStrategy, LocationStrategy, PeriodStrategy, EventStrategy
-from client.NerdClient import NerdClient
+from client.NerdOldClient import NerdOldClient
 
 geoLocationLocation = "http://api.geonames.org/search"
 
-nerdClient = NerdClient()
+nerdClient = NerdOldClient()
 
 strategies = {
     'person': PersonStrategy(),
