@@ -7,11 +7,11 @@ from bottle import route, request, run, static_file, response
 
 # Configuration
 from XmlStrategies import GenericItemStrategy, PersonStrategy, LocationStrategy, PeriodStrategy, EventStrategy
-from client.NerdOldClient import NerdOldClient
+from client.NerdClient import NerdClient
 
 geoLocationLocation = "http://api.geonames.org/search"
 
-nerdClient = NerdOldClient()
+nerdClient = NerdClient()
 
 strategies = {
     'person': PersonStrategy(),
@@ -33,8 +33,21 @@ def info():
 def server_static(filename):
     return static_file(filename, root='webapp')
 
+# @route('/nerd2', method='POST')
+# def nerdText():
+#     success = False
+#     if 'text' not in request.forms:
+#         return {'OK': success}
+#
+#     text = request.forms.get("text")
+#     nerdResponse, statusCode = nerdClient.processText(text)
+#
+#     if statusCode == 200:
+#         success = True
+#
+#     return {'OK': success, 'locations': nerdResponse}
 
-@route('/geotagNerdLocations', method='POST')
+@route('/geotag', method='POST')
 def geotagNerdLocations():
     success = False
     if 'text' not in request.json:
@@ -43,57 +56,64 @@ def geotagNerdLocations():
     text = request.json["text"]
 
     nerdResponse, statusCode = nerdClient.processText(text)
-    geoLocations = []
 
     if statusCode == 200:
-        if 'entities' in nerdResponse.keys():
-            for entity in nerdResponse['entities']:
-                if 'type' in entity and entity['type'] == "LOCATION":
-                    if 'preferredTerm' in entity:
-                        placeName = entity['preferredTerm']
-                    else:
-                        placeName = entity['rawName']
-
-                    isCountry = checkIfCountry(entity)
-
-                    geo = requests.get(geoLocationLocation,
-                                       params={'maxRows': 1, 'type': 'json', 'username': 'lfoppiano', 'q': placeName})
-
-                    print("GEO gazetteer response for query " + placeName + ": " + str(geo.status_code) + " in " + str(
-                        geo.elapsed))
-
-                    if geo.status_code == 200:
-
-                        locationResponseJson = geo.json()
-                        if 'geonames' in locationResponseJson:
-                            geonames = locationResponseJson['geonames']
-                            for location in geonames:
-                                if 'countryName' in location:
-                                    countryName = location['countryName']
-                                else:
-                                    countryName = None
-
-                                geoLocations.append(
-                                    {
-                                        'json': location,
-                                        'name': location['name'],
-                                        'isCountry': isCountry,
-                                        'country': countryName,
-                                        'coordinates': {
-                                            'longitude': location['lng'],
-                                            'latitude': location['lat']
-                                        }
-                                    }
-                                )
-                                success = True
-                    else:
-                        geoLocations[location] = "no location resolved in the Gazetteer";
-
+        geoLocations = fetchGeolocation(nerdResponse)
+        success = True
     else:
         geoLocations = {'error': statusCode}
         success = False
 
     return {'OK': success, 'locations': geoLocations}
+
+
+def fetchGeolocation(nerdResponse):
+    geoLocations = []
+
+    if 'entities' in nerdResponse.keys():
+        for entity in nerdResponse['entities']:
+            if 'type' in entity and entity['type'] == "LOCATION":
+                if 'preferredTerm' in entity:
+                    placeName = entity['preferredTerm']
+                else:
+                    placeName = entity['rawName']
+
+                isCountry = checkIfCountry(entity)
+
+                geo = requests.get(geoLocationLocation,
+                                   params={'maxRows': 1, 'type': 'json', 'username': 'lfoppiano', 'q': placeName})
+
+                print("GEO gazetteer response for query " + placeName + ": " + str(geo.status_code) + " in " + str(
+                    geo.elapsed))
+
+                if geo.status_code == 200:
+
+                    locationResponseJson = geo.json()
+                    if 'geonames' in locationResponseJson:
+                        geonames = locationResponseJson['geonames']
+                        for location in geonames:
+                            if 'countryName' in location:
+                                countryName = location['countryName']
+                            else:
+                                countryName = None
+
+                            geoLocations.append(
+                                {
+                                    'json': location,
+                                    'name': location['name'],
+                                    'isCountry': isCountry,
+                                    'country': countryName,
+                                    'coordinates': {
+                                        'longitude': location['lng'],
+                                        'latitude': location['lat']
+                                    }
+                                }
+                            )
+                            success = True
+                else:
+                    geoLocations[location] = "no location resolved in the Gazetteer";
+    return geoLocations
+
 
 def checkIfCountry(location):
     if 'sense' in location and 'fineSense' in location['sense']:
