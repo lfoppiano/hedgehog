@@ -8,7 +8,8 @@ class NerdClient:
     conceptService = nerdLocation + "/kb/concept"
     segmentationService = nerdLocation + "/segmentation"
 
-    maxTextLength = 1
+    # approximation :-)
+    maxTextLength = 500
 
     def processText(self, text):
         text = text.replace("\n", "").replace("\r", "")
