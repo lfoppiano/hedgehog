@@ -1,8 +1,9 @@
+#coding: utf-8
 import requests
 
 
 class NerdClient:
-    # nerdLocation = "http://localhost:8090/service"
+    # nerdLocation = "http://128.93.83.104:8090"
     nerdLocation = "http://nerd.huma-num.fr/nerd"
     disambiguateService = nerdLocation + "/disambiguate"
     conceptService = nerdLocation + "/kb/concept"
@@ -12,7 +13,7 @@ class NerdClient:
     maxTextLength = 500
 
     def processText(self, text):
-        text = text.replace("\n", "").replace("\r", "")
+        #text = text.replace("\n", "").replace("\r", "")
 
         sentenceCoordinates = [
             {
@@ -21,10 +22,20 @@ class NerdClient:
             }
         ]
 
+        body = {
+            "text": text,
+            "entities": [],
+            "resultLanguages": ["fr", "de", "en"],
+            "onlyNER": "false",
+            "customisation": "generic"
+        }
+
         # Split text in sentences
         totalNbSentences = len(sentenceCoordinates)
+        sentencesGroups = []
+
         if len(text) > self.maxTextLength:
-            statusCode, response = self.segmentate(text)
+            statusCode, response =  self.segmentate(text)
 
             if statusCode == 200:
                 sentenceCoordinates = response['sentences']
@@ -33,45 +44,39 @@ class NerdClient:
                 exit(-1)
 
             print("text too long, splitted in " + str(totalNbSentences) + " sentences. ")
-
-        body = {
-            "text": text,
-            "entities": [],
-            "resultLanguages": ["fr", "de", "en"],
-            "onlyNER": "false",
-            "customisation": "generic"
-        }
+            sentenceGroups = self.groupSentences(totalNbSentences,3)
+        else:
+            body['sentence'] = "true" 
+      
         if totalNbSentences > 1:
             body['sentences'] = sentenceCoordinates
 
-        sentencesGroups = []
-        currentSentenceGroup = []
-        for i in range(0, totalNbSentences):
-            if i % 3 == 0:
-                if len(currentSentenceGroup) > 0:
-                    sentencesGroups.append(currentSentenceGroup)
-                currentSentenceGroup = [i]
-            else:
-                currentSentenceGroup.append(i)
+        print(body)
 
-        if len(currentSentenceGroup) > 0:
-            sentencesGroups.append(currentSentenceGroup)
+        if len(sentencesGroups) > 0:
+            for group in sentencesGroups:
+                body['processSentence'] = group
 
-        for group in sentencesGroups:
-            body['processSentence'] = group
+                nerdResponse,statusCode = request(body)
 
-            files = {"query": str(body)}
-
-            print(str(files))
-
-            r = requests.post(self.disambiguateService, files=files, headers={'Accept': 'application/json'})
-
-            statusCode = r.status_code
-            nerdResponse = r.reason
-            if statusCode == 200:
-                nerdResponse = r.json()
                 if 'entities' in nerdResponse:
                     body['entities'].extend(nerdResponse['entities'])
+        else:
+             nerdResponse,statusCode = self.request(body)
+
+        return nerdResponse,statusCode   
+
+    def request(self,body):
+        files = {"query": str(body)}
+
+        r = requests.post(self.disambiguateService, files=files, headers={'Accept': 'application/json'})
+
+        statusCode = r.status_code
+        nerdResponse = r.reason
+        if statusCode == 200:
+            nerdResponse = r.json()
+            if 'entities' in nerdResponse:
+                body['entities'].extend(nerdResponse['entities'])
 
                     # if 'domains' in nerdResponse:
                     #     body['domains'].append(nerdResponse['entities'])
@@ -126,3 +131,20 @@ class NerdClient:
             nerdResponse = r.json()
 
         return statusCode, nerdResponse
+
+    def groupSentences(self, totalNbSentences, groupLength):
+
+        sentencesGroups = []
+        currentSentenceGroup = []
+        for i in range(0, totalNbSentences):
+            if i % groupLength == 0:
+                if len(currentSentenceGroup) > 0:
+                    sentencesGroups.append(currentSentenceGroup)
+                currentSentenceGroup = [i]
+            else:
+                currentSentenceGroup.append(i)
+
+        if len(currentSentenceGroup) > 0:
+            sentencesGroups.append(currentSentenceGroup)
+
+        return sentencesGroups
