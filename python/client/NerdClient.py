@@ -6,7 +6,7 @@ class NerdClient:
     # nerdLocation = "http://128.93.83.104:8090"
     nerdLocation = "http://nerd.huma-num.fr/nerd"
     disambiguateService = nerdLocation + "/disambiguate"
-    conceptService = nerdLocation + "/kb/concept"
+    conceptService = nerdLocation + "/service/kb/concept"
     segmentationService = nerdLocation + "/segmentation"
 
     # approximation :-)

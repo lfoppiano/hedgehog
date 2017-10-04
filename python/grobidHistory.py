@@ -9,11 +9,7 @@ nerdClient = NerdClient()
 parserClient = ParserClient()
 
 text = """
-Suite de la tournée des relations d'avant-guerre. J'ai aperçu mon plombier - il y a une véritable joie à retrouver des relations d'autrefois, après quatre années de coupure et de se sentir à l'unisson sur Pétain. Quand il m'en a parlé j'ai hésité à répondre catégoriquement, pour ne pas les choquer et j'ai dit : c'est un pauvre homme. Quel déchaînement : elle m'a dit c'est ainsi que vous appelez un homme qui nuit à son pays, etc... etc...
-Cette femme, très simple, est vraiment épatante. Elle m'explique que depuis le début elle écoute les informations de la radio anglaise et les diffuse dans le quartier. Je leur demande s'ils sont affiliés à une organisation - Oui - Laquelle "la résistance " C'sst ici que parle le bon sens et la clairvoyance : au sommet on se bat pour des initiales, à la base on croit en la résistance.
-On y croit avec plus de lucidité que de prétendus experts.
-Cet homme était de droite autrefois ; Il m'explique que parmi les riches il y en a beaucoup qui ne sont pas avec nous, parce qu'ils craignant pour leur gros sous. Ils n'ont d'ailleurs pas renié leur origine, elle me parle de la fierté qu'elle éprouve à retrouver beaucoup de catholiques dans la résistance.
-Nous parlons d'autres voisins du quartiers que sont-ils devenus. Celui-là vous savez c'est un français... et ça veut tout dire. Elle a raison cela veut tout dire - la droits a éclaté au feu de la guerre - il y a d'un côté les Français, plombiers ou hommes de lettres, et de l'autre ceux qui pensent à leurs gros sous...
+L'extrême-gauche de la Résistance affiche un scepticisme critique. Je vois Yves qui m'avait cité l'impatience d'Alger devant le cas Pucheu comme une illustration de la crise du Gaullisme.
 """
 
 classesNERD = ["LOCATION", "PERSON", "TITLE", "ACRONYM", "ORGANISATION", "INSTITUTION", "PERSON_TYPE"]
@@ -81,6 +77,7 @@ if 'entities' in nerdResponse:
         # Converted entity['wikipediaExternalRef'] in string
         if 'wikipediaExternalRef' in entity:
             concept, conceptStatus = nerdClient.fetchConcept(str(entity['wikipediaExternalRef']), lang)
+
             if conceptStatus == 200:
                 print("Categories: ")
                 for category in concept['categories']:
@@ -102,7 +99,7 @@ if 'entities' in nerdResponse:
                 # print(POStext.find(entity['rawName']))
 
         if len(POStext) == 0:
-            print("Cannot find the sentence for the entity " + entity['rawName'])
+            print("Cannot find the sentence for the entity " + Nentity)
             sys.exit(-1)
 
         parserResponse = parserClient.process(POStext, lang)
@@ -115,7 +112,7 @@ if 'entities' in nerdResponse:
         for s in sentences:
             for nodeId in s.nodes():
                 # print(s.node[nodeId])
-                if s.node[nodeId]['form'] == entity['rawName']:
+                if s.node[nodeId]['form'] == Nentity:
                     # We've found the node corresponding to the entity
                     for h, d in s.edges():
                         #Head
