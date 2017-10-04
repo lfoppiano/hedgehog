@@ -51,7 +51,7 @@ class NerdClient:
         if totalNbSentences > 1:
             body['sentences'] = sentenceCoordinates
 
-        print(body)
+        # print(body)
 
         if len(sentencesGroups) > 0:
             for group in sentencesGroups:
