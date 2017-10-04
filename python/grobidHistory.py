@@ -1,9 +1,9 @@
 # coding: utf-8
 import sys
-from parser.conll import CoNLLReader
 
 from client.NerdClient import NerdClient
 from client.ParserClient import ParserClient
+from parser.Conll import CoNLLReader
 
 nerdClient = NerdClient()
 parserClient = ParserClient()
@@ -113,30 +113,30 @@ if 'entities' in nerdResponse:
 
 
 
-# @route('/subject', method='POST')
-# def process():
-#     success = False
-#     params = request.params
-#     if 'text' not in params:
-#         return {'OK': success}
-#
-#     text = params["text"]
-#     if 'lang' in params:
-#         lang = params["lang"]
-#     else:
-#         lang = "en"
-#
-#     dependency = parserClient.process(text, lang)
-#
-# reader = CoNLLReader()
-#     sentences = reader.read_conll_u(dependency.split("\n"))
-#
-#     subjects = []
-#
-#     for s in sentences:
-#         for h, d in s.edges():
-#             print(str(s[h][d]))
-#             if s[h][d]["deprel"] == 'nsubj':
-#                 subjects.append(s.node[d])
-#
-#     return subjects
+                            # @route('/subject', method='POST')
+                            # def process():
+                            #     success = False
+                            #     params = request.params
+                            #     if 'text' not in params:
+                            #         return {'OK': success}
+                            #
+                            #     text = params["text"]
+                            #     if 'lang' in params:
+                            #         lang = params["lang"]
+                            #     else:
+                            #         lang = "en"
+                            #
+                            #     dependency = parserClient.process(text, lang)
+                            #
+                            # reader = CoNLLReader()
+                            #     sentences = reader.read_conll_u(dependency.split("\n"))
+                            #
+                            #     subjects = []
+                            #
+                            #     for s in sentences:
+                            #         for h, d in s.edges():
+                            #             print(str(s[h][d]))
+                            #             if s[h][d]["deprel"] == 'nsubj':
+                            #                 subjects.append(s.node[d])
+                            #
+                            #     return subjects
