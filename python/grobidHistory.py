@@ -1,10 +1,9 @@
-#coding: utf-8
+# coding: utf-8
 import sys
-import json
+from parser.conll import CoNLLReader
 
 from client.NerdClient import NerdClient
 from client.ParserClient import ParserClient
-from parser.conll import ConllReader
 
 nerdClient = NerdClient()
 parserClient = ParserClient()
@@ -63,10 +62,9 @@ print("Language: " + lang)
 if 'entities' in nerdResponse:
     print('Found %d entities' % len(nerdResponse['entities']))
 
-
     for entity in nerdResponse['entities']:
-        #print(entity['rawName'])
-        
+        # print(entity['rawName'])
+
         if 'type' in entity and entity['type'] in classesNERD:
             preferredName = getPreferredName(entity)
             rawName = getRawName(entity)
@@ -78,8 +76,8 @@ if 'entities' in nerdResponse:
             print("NAME[ERD]: " + str(name) + ", " + str(raw_name))
             print("start: " + str(entity['offsetStart']) + " end: " + str(entity['offsetEnd']))
 
-        #CR
-        #Converted entity['wikipediaExternalRef'] in string
+        # CR
+        # Converted entity['wikipediaExternalRef'] in string
         if 'wikipediaExternalRef' in entity:
             concept, conceptStatus = nerdClient.fetchConcept(str(entity['wikipediaExternalRef']), lang)
             if conceptStatus == 200:
@@ -88,23 +86,21 @@ if 'entities' in nerdResponse:
                     print(str(category['category']) + ", ")
 
         offsetS = entity['offsetStart']
-        
-
 
         sentence = nerdResponse['sentences']
 
-        for i in range(0,len(sentence)):
+        for i in range(0, len(sentence)):
             startt = int(sentence[i]['offsetStart'])
             endd = int(sentence[i]['offsetEnd'])
 
-            r=range(startt,endd)
+            r = range(startt, endd)
             if offsetS in r:
-                POStext= text[startt:endd]
+                POStext = text[startt:endd]
                 # print(POStext.find(entity['rawName']))
 
-                parserResponse = parserClient.process(POStext,"fr")
-                
-                reader = conll.CoNLLReader()
+                parserResponse = parserClient.process(POStext, "fr")
+
+                reader = CoNLLReader()
                 sentences = reader.read_conll_u(parserResponse.split("\n"))
 
                 subjects = []
@@ -114,3 +110,33 @@ if 'entities' in nerdResponse:
                         print(str(s[h][d]))
                         if s[h][d]["deprel"] == 'nsubj':
                             subjects.append(s.node[d])
+
+
+
+# @route('/subject', method='POST')
+# def process():
+#     success = False
+#     params = request.params
+#     if 'text' not in params:
+#         return {'OK': success}
+#
+#     text = params["text"]
+#     if 'lang' in params:
+#         lang = params["lang"]
+#     else:
+#         lang = "en"
+#
+#     dependency = parserClient.process(text, lang)
+#
+# reader = CoNLLReader()
+#     sentences = reader.read_conll_u(dependency.split("\n"))
+#
+#     subjects = []
+#
+#     for s in sentences:
+#         for h, d in s.edges():
+#             print(str(s[h][d]))
+#             if s[h][d]["deprel"] == 'nsubj':
+#                 subjects.append(s.node[d])
+#
+#     return subjects
