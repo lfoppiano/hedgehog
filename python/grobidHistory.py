@@ -66,26 +66,24 @@ if 'entities' in nerdResponse:
             preferredName = getPreferredName(entity)
             rawName = getRawName(entity)
             print("NAME[NER]: " + preferredName + ", " + rawName + " [" + entity['type'] + "]")
-            print("start: " + str(entity['offsetStart']) + " end: " + str(entity['offsetEnd']))
+            # print("start: " + str(entity['offsetStart']) + " end: " + str(entity['offsetEnd']))
         else:
             name = getPreferredName(entity)
-            raw_name = getRawName(entity)
-            print("NAME[ERD]: " + str(name) + ", " + str(raw_name))
-            print("start: " + str(entity['offsetStart']) + " end: " + str(entity['offsetEnd']))
+            rawName = getRawName(entity)
+            print("NAME[ERD]: " + str(name) + ", " + str(rawName))
+           # print("start: " + str(entity['offsetStart']) + " end: " + str(entity['offsetEnd']))
 
         # CR
         # Converted entity['wikipediaExternalRef'] in string
         if 'wikipediaExternalRef' in entity:
             concept, conceptStatus = nerdClient.fetchConcept(str(entity['wikipediaExternalRef']), lang)
 
-            if conceptStatus == 200:
-                print("Categories: ")
-                for category in concept['categories']:
-                    print(str(category['category']) + ", ")
+            # if conceptStatus == 200:
+            #     print("Categories: ")
+            #     for category in concept['categories']:
+            #         print(str(category['category']) + ", ")
 
-        Nentity = entity['rawName']
         offsetS = entity['offsetStart']
-
         sentence = nerdResponse['sentences']
 
         POStext = ""
@@ -99,37 +97,74 @@ if 'entities' in nerdResponse:
                 # print(POStext.find(entity['rawName']))
 
         if len(POStext) == 0:
-            print("Cannot find the sentence for the entity " + Nentity)
+            print("Cannot find the sentence for the entity " + rawName)
             sys.exit(-1)
 
+        # Parsing the sentence containing the entity -> result in CONLL
         parserResponse = parserClient.process(POStext, lang)
+
+        # Manipulate the CONLL result
 
         reader = CoNLLReader()
         sentences = reader.read_conll_u(parserResponse.split("\n"))
 
-        subjects = []
-
+        namedEntities = []
+        # Get the head and the dependants of the entities
         for s in sentences:
             for nodeId in s.nodes():
                 # print(s.node[nodeId])
-                if s.node[nodeId]['form'] == Nentity:
+                if s.node[nodeId]['form'] == rawName:
+                    substrToken = "TokenRange="
+                    tRange = str(s.node[nodeId]['misc'].split(substrToken)[1])
                     # We've found the node corresponding to the entity
+                    dependents = []
                     for h, d in s.edges():
                         #Head
                         if d == nodeId:
-                            print("head edge: " + str(s[h][d]))
-                            print("head node: " + str(s.node[h]['form']))
+                            head = s[h][d]
+                            head['form'] = str(s.node[h]['form'])
+                            # this doesn't work
+                            # if s.node[d]['misc'].find(substrToken):
+                            #    head['range'] = s.node[h]['misc'].split(substrToken)
+                            #else:
+                            #   head['range'] = ''
                             continue
+
 
                         ## Dependants
                         elif h == nodeId:
-                            print("dependent edge: " +str(s[h][d]))
-                            print("dependent node: " + str(s.node[d]['form']))
+                            dep = (s[h][d])
+                            dep['form'] = str(s.node[d]['form'])
+                            # this doesn't work
+                            # if s.node[d]['misc'].find(substrToken):
+                            #     dep['range'] = s.node[d]['misc'].split(substrToken)
+                            # else:
+                            #     dep['range'] = ''
+                            dependents.append(dep)
 
+        # List, with the entity, its head and its dependents.
+                    namedEntity = {
+                            "rawName" : rawName,
+                            "preferredName":concept['preferredTerm'],
+                            "tokenRange":tRange,
+                            "wikipediaExternalRef":entity['wikipediaExternalRef'],
+                            "head" : head,
+                            "dependents" : dependents
+                            }
+                    print(namedEntity)
+
+                    # I commented  the following, because I can't manage to make it work, though it's kindergarden level.
+                    #namedEntities.append(namedEntity)
+
+#response = {
+ #   "sentence": POStext,
+  #  "namedEntities": namedEntities
+   # }
+
+#print(response)
 
                         # if s[h][d]["deprel"] == 'nsubj':
                         #     subjects.append(s.node[d])
-
 
 
 
