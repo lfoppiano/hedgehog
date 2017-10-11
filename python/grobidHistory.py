@@ -54,6 +54,7 @@ if 'language' in nerdResponse:
     lang = nerdResponse['language']['lang']
 
 print("Language: " + lang)
+namedEntities = []
 
 if 'entities' in nerdResponse:
     print('Found %d entities' % len(nerdResponse['entities']))
@@ -71,17 +72,18 @@ if 'entities' in nerdResponse:
             name = getPreferredName(entity)
             rawName = getRawName(entity)
             print("NAME[ERD]: " + str(name) + ", " + str(rawName))
-           # print("start: " + str(entity['offsetStart']) + " end: " + str(entity['offsetEnd']))
+            # print("start: " + str(entity['offsetStart']) + " end: " + str(entity['offsetEnd']))
 
         # CR
         # Converted entity['wikipediaExternalRef'] in string
         if 'wikipediaExternalRef' in entity:
             concept, conceptStatus = nerdClient.fetchConcept(str(entity['wikipediaExternalRef']), lang)
 
-            # if conceptStatus == 200:
-            #     print("Categories: ")
-            #     for category in concept['categories']:
-            #         print(str(category['category']) + ", ")
+            if conceptStatus != 200:
+                concept = {}
+                #     print("Categories: ")
+                #     for category in concept['categories']:
+                #         print(str(category['category']) + ", ")
 
         offsetS = entity['offsetStart']
         sentence = nerdResponse['sentences']
@@ -108,7 +110,6 @@ if 'entities' in nerdResponse:
         reader = CoNLLReader()
         sentences = reader.read_conll_u(parserResponse.split("\n"))
 
-        namedEntities = []
         # Get the head and the dependants of the entities
         for s in sentences:
             for nodeId in s.nodes():
@@ -119,14 +120,14 @@ if 'entities' in nerdResponse:
                     # We've found the node corresponding to the entity
                     dependents = []
                     for h, d in s.edges():
-                        #Head
+                        # Head
                         if d == nodeId:
                             head = s[h][d]
                             head['form'] = str(s.node[h]['form'])
                             # this doesn't work
                             # if s.node[d]['misc'].find(substrToken):
                             #    head['range'] = s.node[h]['misc'].split(substrToken)
-                            #else:
+                            # else:
                             #   head['range'] = ''
                             continue
 
@@ -142,29 +143,33 @@ if 'entities' in nerdResponse:
                             #     dep['range'] = ''
                             dependents.append(dep)
 
-        # List, with the entity, its head and its dependents.
+                            # List, with the entity, its head and its dependents.
+
+                    preferredName = ""
+                    if 'preferredTerm' in concept:
+                        preferredName = concept['preferredTerm']
+
                     namedEntity = {
-                            "rawName" : rawName,
-                            "preferredName":concept['preferredTerm'],
-                            "tokenRange":tRange,
-                            "wikipediaExternalRef":entity['wikipediaExternalRef'],
-                            "head" : head,
-                            "dependents" : dependents
-                            }
-                    print(namedEntity)
+                        "rawName": rawName,
+                        "preferredName": preferredName,
+                        "tokenRange": tRange,
+                        "wikipediaExternalRef": entity['wikipediaExternalRef'],
+                        "head": head,
+                        "dependents": dependents
+                    }
 
-                    # I commented  the following, because I can't manage to make it work, though it's kindergarden level.
-                    #namedEntities.append(namedEntity)
+                    namedEntities.append(namedEntity)
+print(namedEntities)
+                    
+                    # response = {
+                    #   "sentence": POStext,
+                    #  "namedEntities": namedEntities
+                    # }
 
-#response = {
- #   "sentence": POStext,
-  #  "namedEntities": namedEntities
-   # }
+                    # print(response)
 
-#print(response)
-
-                        # if s[h][d]["deprel"] == 'nsubj':
-                        #     subjects.append(s.node[d])
+                    # if s[h][d]["deprel"] == 'nsubj':
+                    #     subjects.append(s.node[d])
 
 
 
