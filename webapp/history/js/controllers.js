@@ -20,40 +20,52 @@ app.controller('nerdController', function ($scope, $http, $sce) {
 
         var currentAnnotationIndex = entitiesList.length - 1;
 
-        for (var m = entitiesList.length - 1; m >= 0; m--) {
-            var entity = entitiesList[m];
+        for (var entityIndex = entitiesList.length - 1; entityIndex >= 0; entityIndex--) {
+            var entity = entitiesList[entityIndex];
 
-            var label = entity.rawText;
-            var type = entity.type;
+            var startEntity = parseInt(entity.offsetStart, 10);
+            var endEntity = parseInt(entity.offsetEnd, 10);
 
-            var start = parseInt(entity.offsetStart, 10);
-            var end = parseInt(entity.offsetEnd, 10);
+            var startHead = parseInt(entity.head.offsetStart, 10);
+            var endHead = parseInt(entity.head.offsetEnd, 10);
 
-            if (start > lastMaxIndex) {
+            if (startEntity > lastMaxIndex) {
                 // we have a problem in the initial sort of the entities
                 // the server response is not compatible with the client
                 console.log("Sorting of entities as present in the server's response not valid for this client.");
-            } else if (start === lastMaxIndex) {
-            } else if (end > lastMaxIndex) {
-                end = lastMaxIndex;
-                lastMaxIndex = start;
+            } else if (endEntity > lastMaxIndex) {
+                endEntity = lastMaxIndex;
+                lastMaxIndex = startEntity;
             } else {
-                annotatedText = annotatedText.substring(0, start)
-                    + '<span uib-popover="' + type + '" popover-trigger="\'mouseenter\'" id="annot-' + m + '" class="label ' + type + '" style="cursor:hand;cursor:pointer;">'
-                    + annotatedText.substring(start, end)
-                    + '</span>'
-                    + annotatedText.substring(end, annotatedText.length + 1);
+                if (startEntity < startHead) {
+                    annotatedText = annotatedText.substring(0, startEntity)
+                        + '<span id="annot-' + entityIndex + '" class="label ' + 'entity' + '" style="cursor:hand;cursor:pointer;">'
+                        + annotatedText.substring(startEntity, endEntity)
+                        + '</span>'
+                        + annotatedText.substring(endEntity, startHead)
+                        + '<span id="annot-' + entityIndex + '" class="label ' + 'head' + '" style="cursor:hand;cursor:pointer;">'
+                        + annotatedText.substring(startHead, endHead)
+                        + '</span>'
+                        + annotatedText.substring(endHead, annotatedText.length + 1);
+                    lastMaxIndex = startEntity
 
-                lastMaxIndex = start;
-                currentAnnotationIndex = m;
+                } else {
+                    annotatedText = annotatedText.substring(0, startHead)
+                        + '<span id="annot-' + entityIndex + '" class="label ' + 'head' + '" style="cursor:hand;cursor:pointer;">'
+                        + annotatedText.substring(startHead, endHead)
+                        + '</span>'
+                        + annotatedText.substring(endHead, startEntity)
+                        + '<span id="annot-' + entityIndex + '" class="label ' + 'entity' + '" style="cursor:hand;cursor:pointer;">'
+                        + annotatedText.substring(startEntity, endEntity)
+                        + '</span>'
+                        + annotatedText.substring(endEntity, annotatedText.length + 1);
+                    lastMaxIndex = startHead;
+                }
+                console.log(annotatedText);
+                currentAnnotationIndex = entityIndex;
             }
-
-            
-
-
         }
 
-        console.log("bam! ");
         $scope.result = $sce.trustAsHtml(annotatedText);
     };
 

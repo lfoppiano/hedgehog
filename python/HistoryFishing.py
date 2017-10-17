@@ -94,10 +94,6 @@ class HistoryFishing:
         return 0, 0
 
     def process(self, text):
-        # text = """
-        # L'extrême-gauche de la Résistance affiche un scepticisme critique. Je vois Yves qui m'avait cité l'impatience d'Alger devant le cas Pucheu comme une illustration de la crise du Gaullisme.
-        # """
-
         print("Processing " + text)
         nerdResponse, statusCode = self.nerdClient.processText(text)
 
@@ -140,9 +136,9 @@ class HistoryFishing:
                 if 'type' in entity:
                     namedEntity['type'] = entity['type']
 
-                if namedEntity['type'] in self.classesNERD:
-                    namedEntities.append(namedEntity)
-                    i = i + 1
+                    # if namedEntity['type'] in self.classesNERD:
+                namedEntities.append(namedEntity)
+                i = i + 1
 
         # Working on the sentences
         sentences = nerdResponse['sentences']
@@ -172,6 +168,8 @@ class HistoryFishing:
 
                 for entityIndex in result.keys():
                     head, dependencies = result[entityIndex]
+                    head['offsetStart'] = int(head['offsetStart']) + int(sentences[sentenceIndex]['offsetStart'])
+                    head['offsetEnd'] = int(head['offsetEnd']) + int(sentences[sentenceIndex]['offsetStart'])
                     namedEntities[entityIndex]['dependencies'] = dependencies
                     namedEntities[entityIndex]['head'] = head
 

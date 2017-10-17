@@ -10,12 +10,12 @@
     -moz-border-radius: 3px;
     border-radius: 3px;
 }
-.label.interval {
+.label.entity {
     background-color: #398739;
 }
-.label.value{
+.label.dependant{
     background-color: #c43c35;
 }
-.label.list {
+.label.head {
     background-color: #f89406;
 }

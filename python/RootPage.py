@@ -176,7 +176,7 @@ def extractSubjectsAndEntities():
 
     historyFishing = HistoryFishing()
 
-    return {'OK': success, 'entities': historyFishing.process(text)}
+    return {'OK': success, 'text': text, 'entities': historyFishing.process(text)}
 
 
 if len(argv) == 3:
