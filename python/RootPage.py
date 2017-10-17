@@ -6,6 +6,7 @@ import requests
 from bottle import route, request, run, static_file, response
 
 # Configuration
+from HistoryFishing import HistoryFishing
 from XmlStrategies import GenericItemStrategy, PersonStrategy, LocationStrategy, PeriodStrategy, EventStrategy
 from client.NerdClient import NerdClient
 
@@ -33,19 +34,6 @@ def info():
 def server_static(filename):
     return static_file(filename, root='webapp')
 
-# @route('/nerd2', method='POST')
-# def nerdText():
-#     success = False
-#     if 'text' not in request.forms:
-#         return {'OK': success}
-#
-#     text = request.forms.get("text")
-#     nerdResponse, statusCode = nerdClient.processText(text)
-#
-#     if statusCode == 200:
-#         success = True
-#
-#     return {'OK': success, 'locations': nerdResponse}
 
 @route('/geotag', method='POST')
 def geotagNerdLocations():
@@ -175,6 +163,20 @@ def teiBuilderNerd():
         string = ET.tostring(root, encoding="utf8", method='xml')
 
         return string
+
+
+## TODO: rename this crap
+@route('/processHistory', method="POST")
+def extractSubjectsAndEntities():
+    success = False
+    if 'text' not in request.json:
+        return {'OK': success}
+
+    text = request.json["text"]
+
+    historyFishing = HistoryFishing()
+
+    return {'OK': success, 'entities': historyFishing.process(text)}
 
 
 if len(argv) == 3:
