@@ -63,17 +63,6 @@ if 'entities' in nerdResponse:
     for entity in nerdResponse['entities']:
         # print(entity['rawName'])
 
-        if 'type' in entity and entity['type'] in classesNERD:
-            preferredName = getPreferredName(entity)
-            rawName = getRawName(entity)
-            print("NAME[NER]: " + preferredName + ", " + rawName + " [" + entity['type'] + "]")
-            # print("start: " + str(entity['offsetStart']) + " end: " + str(entity['offsetEnd']))
-        else:
-            name = getPreferredName(entity)
-            rawName = getRawName(entity)
-            print("NAME[ERD]: " + str(name) + ", " + str(rawName))
-            # print("start: " + str(entity['offsetStart']) + " end: " + str(entity['offsetEnd']))
-
         # CR
         # Converted entity['wikipediaExternalRef'] in string
         if 'wikipediaExternalRef' in entity:
@@ -84,6 +73,22 @@ if 'entities' in nerdResponse:
                 #     print("Categories: ")
                 #     for category in concept['categories']:
                 #         print(str(category['category']) + ", ")
+
+        if 'type' in entity and entity['type'] in classesNERD:
+            preferredName = getPreferredName(entity)
+            if not preferredName and 'preferredTerm' in concept:
+                preferredName = concept['preferredTerm']
+                
+            rawName = getRawName(entity)
+            print("NAME[NER]: " + preferredName + ", " + rawName + " [" + entity['type'] + "]")
+            # print("start: " + str(entity['offsetStart']) + " end: " + str(entity['offsetEnd']))
+        else:
+            name = getPreferredName(entity)
+            if not name and 'preferredTerm' in concept:
+                name = concept['preferredTerm']
+            rawName = getRawName(entity)
+            print("NAME[ERD]: " + str(name) + ", " + str(rawName))
+            # print("start: " + str(entity['offsetStart']) + " end: " + str(entity['offsetEnd']))
 
         offsetS = entity['offsetStart']
         sentence = nerdResponse['sentences']
@@ -160,16 +165,16 @@ if 'entities' in nerdResponse:
 
                     namedEntities.append(namedEntity)
 print(namedEntities)
-                    
-                    # response = {
-                    #   "sentence": POStext,
-                    #  "namedEntities": namedEntities
-                    # }
 
-                    # print(response)
+# response = {
+#   "sentence": POStext,
+#  "namedEntities": namedEntities
+# }
 
-                    # if s[h][d]["deprel"] == 'nsubj':
-                    #     subjects.append(s.node[d])
+# print(response)
+
+# if s[h][d]["deprel"] == 'nsubj':
+#     subjects.append(s.node[d])
 
 
 
