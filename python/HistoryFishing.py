@@ -25,19 +25,12 @@ class HistoryFishing:
 
         return preferredTerm
 
-    def getRawName(self, entity):
+    def getField(self, entity, field):
         name = ""
-        if 'rawName' in entity:
-            name = entity['rawName']
+        if field in entity:
+            name = entity[field]
 
         return name
-
-    def getDomains(self, entity):
-        domains = []
-        if 'domains' in entity:
-            domains = entity['domains']
-
-        return domains
 
     def collectEntities(self, entities, listEntitiesInSentence):
         result = []
@@ -130,7 +123,7 @@ class HistoryFishing:
             # Collect all the entities
             for entity in entityList:
                 preferredTerm = self.fetchPreferredTerm(entity, lang)
-                rawName = self.getRawName(entity)
+                rawName = self.getField(entity, 'rawName')
                 offsetS = entity['offsetStart']
                 offsetE = entity['offsetEnd']
 
@@ -138,17 +131,18 @@ class HistoryFishing:
                     "id": i,
                     "rawName": rawName,
                     "preferredName": preferredTerm,
-                    "wikipediaExternalRef": entity['wikipediaExternalRef'],
+                    "wikipediaExternalRef": self.getField(entity, 'wikipediaExternalRef'),
                     "offsetStart": offsetS,
                     "offsetEnd": offsetE
                 }
 
                 # If NER type present, I add it
-                if 'type' in entity and entity['type'] in self.classesNERD:
+                if 'type' in entity:
                     namedEntity['type'] = entity['type']
 
-                namedEntities.append(namedEntity)
-                i = i + 1
+                if namedEntity['type'] in self.classesNERD:
+                    namedEntities.append(namedEntity)
+                    i = i + 1
 
         # Working on the sentences
         sentences = nerdResponse['sentences']

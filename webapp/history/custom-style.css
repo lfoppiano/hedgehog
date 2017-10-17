@@ -1,0 +1,21 @@
+.label {
+    padding: 1px 3px 2px;
+    font-size: 10px;
+    font-weight: bold;
+    color: #ffffff;
+    text-transform: uppercase;
+    white-space: nowrap;
+    background-color: #87A1A8;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+.label.interval {
+    background-color: #398739;
+}
+.label.value{
+    background-color: #c43c35;
+}
+.label.list {
+    background-color: #f89406;
+}
