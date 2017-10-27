@@ -143,6 +143,7 @@ class HistoryFishing:
 
         # Matching with tbx dictionary
         tbxEntities = tbx.matchEntities(text, sourceDictionary, i)
+        namedEntities.append(tbxEntities)
 
         # Working on the sentences
         sentences = nerdResponse['sentences']

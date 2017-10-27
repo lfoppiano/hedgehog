@@ -16,28 +16,32 @@ class tbx:
 
         soup = self.load(sourceDictionary)
 
-        forms = soup.find_all("orth")
-
         namedEntitiesTBX = []
         id = i + 1
-        for form in forms:
-            mEnt = form.text
-
-            if text.find(mEnt) is not -1:
-                offsetStart = text.find(mEnt)
-                offsetEnd = text.find(mEnt) + len(mEnt)
-                namedEntity = {
-                    "id": id,
-                    "rawName": mEnt,
-                    "preferredName": "",
-                    "wikipediaExternalRef": "",
-                    "offsetStart": offsetStart,
-                    "offsetEnd": offsetEnd
-                }
-                namedEntitiesTBX.append(namedEntity)
-                id = id + 1
+        langSecs = soup.find_all("langSec")
+        for form in langSecs:
+            preferredName = form.find("form", {"type": "lemma"}).text.replace("\n", " ").replace("\r", "").strip()
+            orths = form.find_all("orth")
+            for orth in orths:
+                rawName = orth.text
+                if rawName:
+                    if text.find(rawName) is not -1:
+                        offsetStart = text.find(rawName)
+                        offsetEnd = text.find(rawName) + len(rawName)
+                        namedEntity = {
+                            "id": id,
+                            "rawName": rawName,
+                            "preferredName": preferredName,
+                            "wikipediaExternalRef": "",
+                            "offsetStart": offsetStart,
+                            "offsetEnd": offsetEnd
+                        }
+                        namedEntitiesTBX.append(namedEntity)
+                        id = id + 1
 
         return namedEntitiesTBX
+
+
 # test
 t = tbx()
 dictionary = "../../resources/WW2_glossary.xml"
