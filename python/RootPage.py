@@ -7,6 +7,7 @@ from bottle import route, request, run, static_file, response
 
 # Configuration
 from HistoryFishing import HistoryFishing
+from NerdEntitiesWrapper import NerdEntitiesWrapper
 from XmlStrategies import GenericItemStrategy, PersonStrategy, LocationStrategy, PeriodStrategy, EventStrategy
 from client.NerdClient import NerdClient
 
@@ -163,6 +164,19 @@ def teiBuilderNerd():
         string = ET.tostring(root, encoding="utf8", method='xml')
 
         return string
+
+
+@route('/processLongSentences', method="POST")
+def processLongSentences():
+    success = False
+    if 'text' not in request.json:
+        return {'OK': success}
+
+    text = request.json["text"]
+
+    wrapper = NerdEntitiesWrapper()
+
+    return {'OK': success, 'text': text, 'entities': wrapper.process(text)}
 
 
 ## TODO: rename this crap

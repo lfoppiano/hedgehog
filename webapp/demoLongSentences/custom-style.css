@@ -1,0 +1,88 @@
+.label {
+    padding: 1px 3px 2px;
+    font-size: 10px;
+    font-weight: bold;
+    color: #ffffff;
+    text-transform: uppercase;
+    white-space: nowrap;
+    background-color: #87A1A8;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.label.location {
+    background-color: #398739;
+}
+.label.person {
+    background-color: #c43c35;
+}
+.label.period {
+    background-color: #f89406;
+}
+.label.event {
+    background-color: #01A9DB;
+}
+.label.national {
+    background-color: #8904B1;
+}
+.label.measure {
+    background-color: #c43c35;
+}
+.label.acronym {
+    background-color: #c43c35;
+}
+.label.institution {
+    background-color: #c43c35;
+}
+.label.sense {
+    background-color: #87A1A8;
+}
+.label.biology {
+    background-color: #398739;
+}
+.label.chemistry {
+    background-color: #c43c35;
+}
+.label.food {
+    background-color: #398739;
+}
+.label.medicine {
+    background-color: #f89406;
+}
+.label.anatomy {
+    background-color: #f89406;
+}
+.label.engineering {
+    background-color: #01A9DB;
+}
+.label.animals {
+    background-color: #8904B1;
+}
+.label.plants {
+    background-color: #c43c35;
+}
+.label.earth {
+    background-color: #c43c35;
+}
+.label.mathematics {
+    background-color: #c43c35;
+}
+.label.physics {
+    background-color: #87A1A8;
+}
+.label.architecture {
+    background-color: #A901DB;
+}
+.label.astronautics {
+    background-color: #87A1A8;
+}
+.label.telecommunication {
+    background-color: #5C460C;
+}
+.label.computer_science {
+    background-color: #04B4AE;
+}
+.label.environment {
+    background-color: #31B404;
+}
