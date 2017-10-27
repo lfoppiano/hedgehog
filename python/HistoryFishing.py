@@ -4,6 +4,7 @@ import sys
 from client.NerdClient import NerdClient
 from client.ParserClient import ParserClient
 from parser.Conll import CoNLLReader
+from parser.tbx import tbx
 
 
 class HistoryFishing:
@@ -93,7 +94,7 @@ class HistoryFishing:
             return split[0], split[1]
         return 0, 0
 
-    def process(self, text):
+    def process(self, text, sourceDictionary):
         print("Processing " + text)
         nerdResponse, statusCode = self.nerdClient.processText(text)
 
@@ -139,6 +140,9 @@ class HistoryFishing:
                     # if namedEntity['type'] in self.classesNERD:
                 namedEntities.append(namedEntity)
                 i = i + 1
+
+        # Matching with tbx dictionary
+        tbxEntities = tbx.matchEntities(text, sourceDictionary, i)
 
         # Working on the sentences
         sentences = nerdResponse['sentences']
