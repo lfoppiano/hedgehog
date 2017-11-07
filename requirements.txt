@@ -1,3 +1,4 @@
 requests
 bottle
 networkx
+beautifulsoup4
