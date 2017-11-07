@@ -94,7 +94,7 @@ class HistoryFishing:
             return split[0], split[1]
         return 0, 0
 
-    def process(self, text, sourceDictionary):
+    def process(self, text):
         print("Processing " + text)
         nerdResponse, statusCode = self.nerdClient.processText(text)
 
@@ -142,6 +142,7 @@ class HistoryFishing:
                 i = i + 1
 
         # Matching with tbx dictionary
+        sourceDictionary = "../resources/WW2_glossary.xml"
         tbxEntities = tbx.matchEntities(text, sourceDictionary, i)
         namedEntities.append(tbxEntities)
 
