@@ -142,9 +142,9 @@ class HistoryFishing:
                 i = i + 1
 
         # Matching with tbx dictionary
-        sourceDictionary = "../resources/WW2_glossary.xml"
-        tbxEntities = tbx.matchEntities(text, sourceDictionary, i)
-        namedEntities.append(tbxEntities)
+        # sourceDictionary = "resources/WW2_glossary.xml"
+        # tbxEntities = tbx.matchEntities(text, sourceDictionary, i)
+        # namedEntities.append(tbxEntities)
 
         # Working on the sentences
         sentences = nerdResponse['sentences']
