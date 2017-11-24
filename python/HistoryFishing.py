@@ -12,6 +12,7 @@ class HistoryFishing:
     parserClient = ParserClient()
 
     classesNERD = ["LOCATION", "PERSON", "TITLE", "ACRONYM", "ORGANISATION", "INSTITUTION", "PERSON_TYPE"]
+    domainsNERD = ["History"]
     domains = []
 
     def fetchPreferredTerm(self, entity, lang):
@@ -178,5 +179,13 @@ class HistoryFishing:
                     head['offsetEnd'] = int(head['offsetEnd']) + int(sentences[sentenceIndex]['offsetStart'])
                     namedEntities[entityIndex]['dependencies'] = dependencies
                     namedEntities[entityIndex]['head'] = head
+
+        for entity in namedEntities:
+            print("-> " + str(entity['rawName']))
+            if 'head' in entity:
+                print("\t\thead: " + str(entity['head']['form']))
+            if 'dependencies' in entity:
+                for dep in entity['dependencies']:
+                    print("\t\tdependency: " + str(dep['form']))
 
         return namedEntities
