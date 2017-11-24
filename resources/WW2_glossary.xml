@@ -2341,6 +2341,7 @@
                      <orth>Godart Justin</orth>
                   </form>
                </langSec>
+               <descrip type="wikipedia" corresp="482642"/>
             </conceptEntry>
             <conceptEntry xml:id="c_647">
                <langSec xml:lang="fr">
@@ -2450,7 +2451,7 @@
             <conceptEntry xml:id="c_677">
                <langSec xml:lang="fr">
                   <form type="lemma">
-                     <orth>Hettier de Boislambert</orth>
+                     <orth>Claude Hettier de Boislambert</orth>
                   </form>
                </langSec>
             </conceptEntry>
@@ -3835,6 +3836,9 @@
                <langSec xml:lang="fr">
                   <form type="lemma">
                      <orth>Gaullisme</orth>
+                  </form>
+                  <form type="variant">
+                     <orth>Gaulisme</orth>
                   </form>
                </langSec>
             </conceptEntry>
