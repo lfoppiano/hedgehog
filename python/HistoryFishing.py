@@ -55,29 +55,32 @@ class HistoryFishing:
             for e in entities:
                 for nodeId in s.nodes():
                     # print(s.node[nodeId]['form'])
-                    if s.node[nodeId]['form'] == e['rawName']:
+                    if s.node[nodeId]['form'] == e['rawName'] \
+                            or e['rawName'].startswith(s.node[nodeId]['form']):
                         # We've found the node corresponding to the entity
                         dependents = []
-                        head = ""
+                        head = {}
 
                         for h, d in s.edges():
                             # Head
                             if d == nodeId:
-                                head = s[h][d]
+                                tmpHead = s[h][d]
                                 head['form'] = str(s.node[h]['form'])
                                 start, end = self.getRange(s.node[h])
                                 head['offsetStart'] = start
                                 head['offsetEnd'] = end
+                                head['relation'] = tmpHead['deprel']
                                 continue
 
 
-                            ## Dependants
+                            # Dependants
                             elif h == nodeId:
-                                dep = (s[h][d])
-                                dep['form'] = str(s.node[d]['form'])
+                                tmpDep = s[h][d]
+                                dep = {'form': str(s.node[d]['form'])}
                                 start, end = self.getRange(s.node[d])
                                 dep['offsetStart'] = start
                                 dep['offsetEnd'] = end
+                                dep['relation'] = tmpDep['deprel']
                                 dependents.append(dep)
 
                         results[e['id']] = (head, dependents)
@@ -98,7 +101,7 @@ class HistoryFishing:
         nerdResponse, statusCode = self.nerdClient.processText(text)
 
         if statusCode != 200:
-            print("error " + str(statusCode))
+            print("error " + str(statusCode) + ": " + str(nerdResponse))
             sys.exit()
 
         lang = 'en'
@@ -181,9 +184,9 @@ class HistoryFishing:
         for entity in namedEntities:
             print("-> " + str(entity['rawName']))
             if 'head' in entity:
-                print("\t\thead: " + str(entity['head']['form']))
+                print("\t\thead: " + str(entity['head']['form']) + " ==> " + str(entity['head']['relation']))
             if 'dependencies' in entity:
                 for dep in entity['dependencies']:
-                    print("\t\tdependency: " + str(dep['form']))
+                    print("\t\tdependency: " + str(dep['form']) + " ==> " + str(dep['relation']))
 
         return namedEntities

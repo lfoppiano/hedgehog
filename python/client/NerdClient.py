@@ -3,7 +3,7 @@ import requests
 
 
 class NerdClient:
-    # nerdLocation = "http://128.93.83.104:8090"
+    # nerdLocation = "http://localhost:8090/service"
     nerdLocation = "http://nerd.huma-num.fr/test/service"
     disambiguateService = nerdLocation + "/disambiguate"
     conceptService = nerdLocation + "/kb/concept"

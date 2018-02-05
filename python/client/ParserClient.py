@@ -17,8 +17,12 @@ class ParserClient:
         if not lang and not self.models[lang]:
             lang = self.models["en"]
 
-        data = {'data': text, 'tokenizer': 'normalized_spaces;ranges', 'model': lang, 'parser': 'true',
-                'tagger': 'true'}
+        data = {'data': text,
+                'tokenizer': 'normalized_spaces;ranges',
+                'model': lang,
+                'parser': 'true',
+                'tagger': 'true'
+                }
 
         r = requests.post(self.clientLocation, data)
 
