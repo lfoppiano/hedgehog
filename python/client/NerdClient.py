@@ -4,7 +4,7 @@ import requests
 
 class NerdClient:
     # nerdLocation = "http://128.93.83.104:8090"
-    nerdLocation = "http://nerd.huma-num.fr/nerd/service"
+    nerdLocation = "http://nerd.huma-num.fr/test/service"
     disambiguateService = nerdLocation + "/disambiguate"
     conceptService = nerdLocation + "/kb/concept"
     segmentationService = nerdLocation + "/segmentation"
@@ -28,8 +28,6 @@ class NerdClient:
         body = {
             "text": text,
             "entities": [],
-            "resultLanguages": ["fr", "de", "en"],
-            "onlyNER": "false",
             "customisation": "generic"
         }
 
@@ -63,7 +61,7 @@ class NerdClient:
                 nerdResponse, statusCode = self.request(body)
 
                 if statusCode == 200 and 'entities' in nerdResponse:
-                    body['entities'].extend(nerdResponse['entities'])
+                    body['entities'] = nerdResponse['entities']
         else:
             nerdResponse, statusCode = self.request(body)
             if statusCode == 200:

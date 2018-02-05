@@ -4,7 +4,6 @@ import sys
 from client.NerdClient import NerdClient
 from client.ParserClient import ParserClient
 from parser.Conll import CoNLLReader
-from parser.tbx import tbx
 
 
 class HistoryFishing:

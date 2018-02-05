@@ -19,6 +19,7 @@ documentaryUnitERDItems = ['accessPoints', 'creator', 'places']
 
 historicalAgentNERDItems = ['name']
 
+
 @route('/ehri/documentaryUnit/<id>', method='GET')
 def getDescription(id):
     rawCollection = rawDatabase.get_collection('documentaryUnit')
