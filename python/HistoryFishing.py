@@ -86,9 +86,8 @@ class HistoryFishing:
 
     def getRange(self, nodeId):
         substrToken = "TokenRange="
-        misc = nodeId['misc']
-        if 'TokenRange' in misc:
-            tRange = misc.split(substrToken)
+        if 'misc' in nodeId and 'TokenRange' in nodeId['misc']:
+            tRange = nodeId['misc'].split(substrToken)
 
             split = str(tRange[1]).split(":")
             return split[0], split[1]
