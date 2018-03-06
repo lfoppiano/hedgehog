@@ -150,10 +150,15 @@ def teiBuilderNerd():
                 for entity in nerdResponse['entities']:
                     if 'type' in entity:
                         type = str(entity['type']).lower()
-                        if type not in annotations.keys():
-                            annotations[type] = []
+                    else:
+                        type = 'generic'
 
-                        annotations[type].append(entity)
+                    if type not in annotations.keys():
+                        annotations[type] = []
+
+                    if 'wikipediaExternalRef' in entity:
+                        entity['wikipediaExternalRef'] = str(entity['wikipediaExternalRef'])
+                    annotations[type].append(entity)
 
         for key in annotations.keys():
             strategy = strategies.get(key)
