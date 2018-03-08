@@ -39,6 +39,9 @@ class AbstractStrategy:
         if 'wikipediaExternalRef' in element:
             idno = ET.SubElement(parent, "idno", attrib={'source': 'wikipedia-en'})
             idno.text = element['wikipediaExternalRef']
+        elif 'wikidataID' in element:
+            idno = ET.SubElement(parent, "idno", attrib={'source': 'wikidata'})
+            idno.text = element['wikidataId']
 
     def populateAnnotationBlock(self, annotationBlock, element, elementId, textId):
         offsetStart = element['offsetStart']
@@ -46,7 +49,16 @@ class AbstractStrategy:
         m = hashlib.md5()
         m.update((str(offsetStart) + ' ' + str(offsetEnd)).encode('utf-8'))
         interpId = m.hexdigest()
-        ET.SubElement(annotationBlock, "interp", attrib={"inst": interpId, "ana": elementId})
+
+        sub_element = ET.SubElement(annotationBlock, "interp", attrib={
+            "inst": interpId,
+            "ana": elementId,
+            "cert": str(0.0)
+        })
+
+        if 'nerd_selection_score' in element:
+            sub_element.attrib['cert'] = str(element['nerd_selection_score'])
+
         ET.SubElement(annotationBlock, "span", attrib={"xml:id": interpId,
                                                        "from": "#string-range(//p[@xml:id='" + textId + "']," +
                                                                str(offsetStart) + "," +
@@ -87,7 +99,8 @@ class LocationStrategy(AbstractStrategy):
         if (elementId in idUniqueList.keys()) is False:
             annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
             idUniqueList[elementId] = annotationBlock
-            place = ET.SubElement(annotationBlock, "place", attrib={"xml:id": elementId})
+            desc = ET.SubElement(annotationBlock, "desc")
+            place = ET.SubElement(desc, "place", attrib={"xml:id": elementId})
             self.addTerms(element, place, 'placeName')
             self.addIdno(element, place)
             self.processDefinitions(place, element, True)
@@ -100,7 +113,7 @@ class LocationStrategy(AbstractStrategy):
 
 
 class PersonStrategy(AbstractStrategy):
-    type = "person"
+    type = "individuals"
 
     def transform(self, elements, type, textId):
         idUniqueList = {}
@@ -123,7 +136,8 @@ class PersonStrategy(AbstractStrategy):
         if (elementId in idUniqueList.keys()) is False:
             annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
             idUniqueList[elementId] = annotationBlock
-            person = ET.SubElement(annotationBlock, "person", attrib={"xml:id": elementId})
+            desc = ET.SubElement(annotationBlock, "desc")
+            person = ET.SubElement(desc, "person", attrib={"xml:id": elementId})
             self.addTerms(element, person, 'persName')
             self.addIdno(element, person)
             self.processDefinitions(person, element, True)
@@ -136,7 +150,7 @@ class PersonStrategy(AbstractStrategy):
 
 
 class PeriodStrategy(AbstractStrategy):
-    type = "period"
+    type = "dateTimes"
 
     def transform(self, elements, type, textId):
         idUniqueList = {}
@@ -159,7 +173,8 @@ class PeriodStrategy(AbstractStrategy):
         if (elementId in idUniqueList.keys()) is False:
             annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
             idUniqueList[elementId] = annotationBlock
-            date = ET.SubElement(annotationBlock, "date", attrib={"xml:id": elementId})
+            desc = ET.SubElement(annotationBlock, "desc")
+            date = ET.SubElement(desc, "date", attrib={"xml:id": elementId})
             self.addTerms(element, annotationBlock, 'date')
             self.addIdno(element, date)
             self.processDefinitions(date, element, True)
@@ -195,8 +210,9 @@ class EventStrategy(AbstractStrategy):
         if (elementId in idUniqueList.keys()) is False:
             annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
             idUniqueList[elementId] = annotationBlock
-            event = ET.SubElement(annotationBlock, "event", attrib={"xml:id": elementId})
-            self.addTerms(element, event, 'head')
+            desc = ET.SubElement(annotationBlock, "desc")
+            event = ET.SubElement(desc, "event", attrib={"xml:id": elementId})
+            self.addTerms(element, event, 'term')
             self.addIdno(element, event)
             self.processDefinitions(event, element, True)
             isAnnotationBlockNew = True
@@ -244,7 +260,8 @@ class GenericItemStrategy(AbstractStrategy):
         if (elementId in idUniqueList.keys()) is False:
             annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
             idUniqueList[elementId] = annotationBlock
-            term = ET.SubElement(annotationBlock, "term", attrib={"xml:id": elementId})
+            desc = ET.SubElement(annotationBlock, "desc")
+            term = ET.SubElement(desc, "term", attrib={"xml:id": elementId})
             self.addTerms(element, term, 'term')
             self.addIdno(element, term)
             self.processDefinitions(term, element, True)

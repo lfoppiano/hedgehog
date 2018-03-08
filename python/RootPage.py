@@ -6,10 +6,11 @@ import requests
 from bottle import route, request, run, static_file, response
 
 # Configuration
+from nerd.nerd import NerdClient
+
 from HistoryFishing import HistoryFishing
 from NerdEntitiesWrapper import NerdEntitiesWrapper
 from XmlStrategies import GenericItemStrategy, PersonStrategy, LocationStrategy, PeriodStrategy, EventStrategy
-from client.NerdClient import NerdClient
 
 geoLocationLocation = "http://api.geonames.org/search"
 
@@ -126,7 +127,7 @@ def teiBuilderNerd():
     response.headers['Content-Type'] = 'application/xml'
     text = request.json["text"]
 
-    nerdResponse, statusCode = nerdClient.processText(text)
+    nerdResponse, statusCode = nerdClient.disambiguate(text)
 
     if nerdResponse:
         root = ET.Element("TEI")

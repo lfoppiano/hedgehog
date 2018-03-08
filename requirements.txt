@@ -2,3 +2,4 @@ requests
 bottle
 networkx
 beautifulsoup4
+entity-fishing-client >= 0.2.2
