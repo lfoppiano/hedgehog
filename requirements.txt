@@ -1,4 +1,5 @@
-requests
+requests==2.18.4
+zenlog==1.1
 bottle
 networkx
 beautifulsoup4

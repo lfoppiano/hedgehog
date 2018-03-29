@@ -92,6 +92,10 @@ app.controller('nerdController', function ($scope, $http, $sce) {
             function success(response) {
                 if (response.status == 200) {
                     $scope.showResults(text, response.data);
+                    $scope.json = response.data;
+                    console.log(response.data)
+                } else {
+                    $scope.results = response.data;
                 }
             },
             function failure(error) {

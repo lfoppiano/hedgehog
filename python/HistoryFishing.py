@@ -1,7 +1,8 @@
 # coding: utf-8
 import sys
 
-from client.NerdClient import NerdClient
+from nerd.nerd import NerdClient
+
 from client.ParserClient import ParserClient
 from parser.Conll import CoNLLReader
 
