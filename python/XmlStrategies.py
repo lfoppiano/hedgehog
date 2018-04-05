@@ -136,10 +136,10 @@ class PersonStrategy(AbstractStrategy):
         if (elementId in idUniqueList.keys()) is False:
             annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
             idUniqueList[elementId] = annotationBlock
-            desc = ET.SubElement(annotationBlock, "desc")
-            person = ET.SubElement(desc, "person", attrib={"xml:id": elementId})
-            self.addTerms(element, person, 'persName')
-            self.addIdno(element, person)
+            person = ET.SubElement(annotationBlock, "person", attrib={"xml:id": elementId})
+            desc = ET.SubElement(person, "desc")
+            self.addTerms(element, desc, 'persName')
+            self.addIdno(element, desc)
             self.processDefinitions(person, element, True)
             isAnnotationBlockNew = True
         else:
@@ -175,8 +175,8 @@ class PeriodStrategy(AbstractStrategy):
             idUniqueList[elementId] = annotationBlock
             desc = ET.SubElement(annotationBlock, "desc")
             date = ET.SubElement(desc, "date", attrib={"xml:id": elementId})
-            self.addTerms(element, annotationBlock, 'date')
-            self.addIdno(element, date)
+            self.addTerms(element, desc, 'date')
+            self.addIdno(element, desc)
             self.processDefinitions(date, element, True)
             isAnnotationBlockNew = True
         else:
@@ -210,10 +210,10 @@ class EventStrategy(AbstractStrategy):
         if (elementId in idUniqueList.keys()) is False:
             annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
             idUniqueList[elementId] = annotationBlock
-            desc = ET.SubElement(annotationBlock, "desc")
-            event = ET.SubElement(desc, "event", attrib={"xml:id": elementId})
+            event = ET.SubElement(annotationBlock, "event", attrib={"xml:id": elementId})
+            desc = ET.SubElement(event, "desc")
             self.addTerms(element, event, 'term')
-            self.addIdno(element, event)
+            self.addIdno(element, desc)
             self.processDefinitions(event, element, True)
             isAnnotationBlockNew = True
         else:
@@ -260,10 +260,10 @@ class GenericItemStrategy(AbstractStrategy):
         if (elementId in idUniqueList.keys()) is False:
             annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
             idUniqueList[elementId] = annotationBlock
-            desc = ET.SubElement(annotationBlock, "desc")
-            term = ET.SubElement(desc, "term", attrib={"xml:id": elementId})
-            self.addTerms(element, term, 'term')
-            self.addIdno(element, term)
+            term = ET.SubElement(annotationBlock, "term", attrib={"xml:id": elementId})
+            desc = ET.SubElement(term, "desc")
+            self.addTerms(element, desc, 'term')
+            self.addIdno(element, desc)
             self.processDefinitions(term, element, True)
 
             isAnnotationBlockNew = True
