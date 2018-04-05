@@ -51,8 +51,8 @@ class AbstractStrategy:
         interpId = m.hexdigest()
 
         sub_element = ET.SubElement(annotationBlock, "interp", attrib={
-            "inst": interpId,
-            "ana": elementId,
+            "inst": '#' + interpId,
+            "ana": '#' + elementId,
             "cert": str(0.0)
         })
 
