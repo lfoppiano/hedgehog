@@ -41,7 +41,7 @@ class tbx:
 
 
 # test
-# t = tbx()
-# dictionary = "../../resources/WW2_glossary.xml"
-# text = "Diné le soir avec Pontaut et Auger. Nous nous demandions si nous devions faire quelque chose en tant qu'anciens P.C. Pontaut est assez enclin à l'admettre. On parle de la dernière attaque de Villon contre Frenay. Auger qui l'a connu parle de lui avec une sympathie qu'il a inspiré à tous ses collaborateurs."
-# print(t.matchEntities(text, dictionary, 99))
+t = tbx()
+dictionary = "../../resources/WW2_glossary.xml"
+text = "Diné le soir avec Pontaut et Auger. Nous nous demandions si nous devions faire quelque chose en tant qu'anciens P.C. Pontaut est assez enclin à l'admettre. On parle de la dernière attaque de Villon contre Frenay. Auger qui l'a connu parle de lui avec une sympathie qu'il a inspiré à tous ses collaborateurs."
+print(t.matchEntities(text, dictionary, 99))
