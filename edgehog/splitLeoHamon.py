@@ -7,6 +7,22 @@ import re
 if len(sys.argv) != 2:
     sys.exit("Missing parameter. Usage: python splitLeoHamon.py leohamon_text.txt")
 
+
+def removeHypen(listText, index, skipNext=0):
+    regex = re.search(r"[¬-]\s*$", listText[index])
+
+    if regex is None:
+        return listText[index], skipNext
+    else:
+        matching = regex.group()
+        newText = listText[index][0:len(listText[index]) - len(matching)]
+        skipNext = skipNext + 1
+
+        (text, skipNext) = removeHypen(listText, index + 1, skipNext)
+
+        return newText + text, skipNext
+
+
 paragraphs = []
 with open(sys.argv[1]) as f:
     # split the text in paragraphs first
@@ -44,24 +60,12 @@ with open(sys.argv[1]) as f:
         if skipNext > 0:
             skipNext = skipNext - 1
             continue
-            
+
         # Dehypenisation
         if i < len(cleanedText):
-            regex = re.search(r"[¬-]\s*$", cleanedText[i])
-            if regex is None:
-                cleanedText2.append(cleanedText[i])
-                continue
-
-            j = i
-            while regex is not None:
-                matching = regex.group()
-                cleanedText2.append(cleanedText[j][0:len(cleanedText[j]) - len(matching)] + cleanedText[j + skipNext+1])
-                skipNext = skipNext + 1
-                regex = re.search(r"[¬-]\s*$", cleanedText2[len(cleanedText2)-1])
-                if regex is None:
-                    j = j + 1
-
-
+            (processedString, computedSkipNext) = removeHypen(cleanedText, i, 0)
+            skipNext = computedSkipNext
+            cleanedText2.append(processedString)
 
             # if cleanedText[i].endswith('¬'):
             #     cleanedText[i] = cleanedText[i][0:len(cleanedText[i]) - 1] + cleanedText[i + 1]
@@ -75,7 +79,6 @@ with open(sys.argv[1]) as f:
             # elif cleanedText[i].endswith('- '):
             #     cleanedText[i] = cleanedText[i][0:len(cleanedText[i]) - 2] + cleanedText[i + 1]
             #     cleanedText.pop(i + 1)
-
 
     print(cleanedText2)
 
@@ -104,5 +107,5 @@ with open(sys.argv[1]) as f:
     #     if cleanLine.endswith('-\n') or cleanLine.endswith('¬\n'):
     #         cleanLine[0:len(line) - 2]
 
-print(str(paragraphs[0]))
+# print(str(paragraphs[0]))
 # .decode('string_escape'))
