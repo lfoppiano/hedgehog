@@ -1,7 +1,7 @@
 # coding: utf-8
 import sys
 
-from client.NerdClient import NerdClient
+from nerd.nerd import NerdClient
 
 
 class NerdEntitiesWrapper:

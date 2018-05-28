@@ -64,23 +64,8 @@ with open(sys.argv[1]) as f:
         # Dehypenisation
         if i < len(cleanedText):
             (processedString, computedSkipNext) = removeHypen(cleanedText, i, 0)
-            skipNext = computedSkipNext
             cleanedText2.append(processedString)
-
-            # if cleanedText[i].endswith('¬'):
-            #     cleanedText[i] = cleanedText[i][0:len(cleanedText[i]) - 1] + cleanedText[i + 1]
-            #     cleanedText.pop(i + 1)
-            # elif cleanedText[i].endswith(matching):
-            #
-            #
-            # elif cleanedText[i].endswith('-'):
-            #     cleanedText[i] = cleanedText[i][0:len(cleanedText[i]) - 1] + cleanedText[i + 1]
-            #     cleanedText.pop(i + 1)
-            # elif cleanedText[i].endswith('- '):
-            #     cleanedText[i] = cleanedText[i][0:len(cleanedText[i]) - 2] + cleanedText[i + 1]
-            #     cleanedText.pop(i + 1)
-
-    print(cleanedText2)
+            skipNext = computedSkipNext
 
     # create paragraphs, separator in two blank lines.
     paragraph = []
@@ -107,5 +92,4 @@ with open(sys.argv[1]) as f:
     #     if cleanLine.endswith('-\n') or cleanLine.endswith('¬\n'):
     #         cleanLine[0:len(line) - 2]
 
-# print(str(paragraphs[0]))
-# .decode('string_escape'))
+print(str(paragraphs.decode('string_escape')))

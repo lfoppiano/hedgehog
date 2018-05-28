@@ -3,4 +3,4 @@ zenlog==1.1
 bottle
 networkx
 beautifulsoup4
-entity-fishing-client >= 0.2.2
+entity-fishing-client >= 0.3.0

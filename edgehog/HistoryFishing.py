@@ -1,11 +1,10 @@
 # coding: utf-8
-import sys
+# import sys
 
+# Local version - when completed we will have to switch to it
 from nerd.nerd import NerdClient
 
 from client.ParserClient import ParserClient
-from parser.Conll import CoNLLReader
-
 
 class HistoryFishing:
     nerdClient = NerdClient()

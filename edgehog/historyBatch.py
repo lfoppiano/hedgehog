@@ -2,6 +2,7 @@
 
 import sys
 
+
 from HistoryFishing import HistoryFishing
 
 hf = HistoryFishing()
@@ -11,6 +12,16 @@ if len(sys.argv) != 3:
 
 input = sys.argv[1]
 output = sys.argv[2]
+
+# a = NerdClient(apiBase="http://nerd.huma-num.fr/nerd")
+a = NerdClient()
+print(a.disambiguatePdf(output))
+# print(a.disambiguateText("This is a sentence written in Washington, and computed in Milan Rome and Ancona. ", "it"))
+
+
+
+sys.exit()
+
 
 ### Processing input
 paragraphs = []

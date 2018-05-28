@@ -2,8 +2,8 @@ import hashlib
 import xml.etree.ElementTree as ET
 from abc import abstractmethod
 
-
 class AbstractStrategy:
+
     @abstractmethod
     def transform(self, elements, type, textId):
         pass
@@ -12,10 +12,18 @@ class AbstractStrategy:
         if not isAnnotationBlockNew:
             return
 
+        if 'wikipediaExternalRef' not in element:
+            return
+
         textClass = ET.SubElement(annotationBlock, "textClass", attrib={"type": "categories"})
-        if 'categories' in element.keys():
+
+        wikipedia_external_ref = element['wikipediaExternalRef']
+
+        concept, status_code = self.nerdClient.fetch_concept(wikipedia_external_ref)
+
+        if 'categories' in concept:
             keywords = ET.SubElement(textClass, "keywords")
-            for category in element['categories']:
+            for category in concept['categories']:
                 ET.SubElement(keywords, "term",
                               attrib={
                                   'scheme': category['source'],
@@ -23,12 +31,23 @@ class AbstractStrategy:
                               }
                               ).text = category['category']
 
+    def processDomains(self, annotationBlock, element, isAnnotationBlockNew):
+        if not isAnnotationBlockNew:
+            return
+
+        textClass = ET.SubElement(annotationBlock, "textClass", attrib={"type": "domains"})
+
+        if 'domains' in element:
+            keywords = ET.SubElement(textClass, "keywords")
+            for domain in element['domains']:
+                ET.SubElement(keywords, "term").text = str(domain)
+
     def processDefinitions(self, parentBlock, element, isAnnotationBlockNew):
         if not isAnnotationBlockNew:
             return
 
-        if 'definitions' in element.keys():
-            for definition in element['definitions']:
+        if 'definitions' in concept:
+            for definition in concept['definitions']:
                 attribs = {}
                 if 'source' in definition:
                     attribs = {'resp': definition['source']}
@@ -75,6 +94,9 @@ class AbstractStrategy:
         elementId = m.hexdigest()
         return elementId
 
+    def fetchConcept(self, element):
+        pass
+
 
 class LocationStrategy(AbstractStrategy):
     type = "location"
@@ -88,14 +110,16 @@ class LocationStrategy(AbstractStrategy):
             elementId = self.calculateElementId(element)
             # print(element['rawName'] + ' -> ' + elementId);
 
-            (annotationBlock, isAnnotationBlockNew) = self.generateOrReuseAnnotationBlock(element, elementId,
+            concept = super(LocationStrategy, self).fetchConcept(element)
+            (annotationBlock, isAnnotationBlockNew) = self.generateOrReuseAnnotationBlock(element, concept, elementId,
                                                                                           idUniqueList, listAnnotation)
             self.populateAnnotationBlock(annotationBlock, element, elementId, textId)
-            self.processCategories(annotationBlock, element, isAnnotationBlockNew)
+            self.processDomains(annotationBlock, element, isAnnotationBlockNew)
+            self.processCategories(annotationBlock, element, concept, isAnnotationBlockNew)
 
         return listAnnotation
 
-    def generateOrReuseAnnotationBlock(self, element, elementId, idUniqueList, listAnnotation):
+    def generateOrReuseAnnotationBlock(self, element, concept, elementId, idUniqueList, listAnnotation):
         if (elementId in idUniqueList.keys()) is False:
             annotationBlock = ET.SubElement(listAnnotation, "annotationBlock", xmlns="http://www.tei-c.org/ns/1.0")
             idUniqueList[elementId] = annotationBlock
@@ -103,7 +127,7 @@ class LocationStrategy(AbstractStrategy):
             place = ET.SubElement(desc, "place", attrib={"xml:id": elementId})
             self.addTerms(element, place, 'placeName')
             self.addIdno(element, place)
-            self.processDefinitions(place, element, True)
+            self.processDefinitions(place, concept, element, True)
             isAnnotationBlockNew = True
         else:
             annotationBlock = idUniqueList[elementId]
@@ -129,6 +153,7 @@ class PersonStrategy(AbstractStrategy):
             self.populateAnnotationBlock(annotationBlock, element, elementId, textId)
             self.processCategories(annotationBlock, element, isAnnotationBlockNew)
             # self.processDefinitions(annotationBlock, element, isAnnotationBlockNew)
+            self.processDomains(annotationBlock, element, isAnnotationBlockNew)
 
         return listAnnotation
 
@@ -166,6 +191,7 @@ class PeriodStrategy(AbstractStrategy):
             self.populateAnnotationBlock(annotationBlock, element, elementId, textId)
             self.processCategories(annotationBlock, element, isAnnotationBlockNew)
             # self.processDefinitions(annotationBlock, element, isAnnotationBlockNew)
+            self.processDomains(annotationBlock, element, isAnnotationBlockNew)
 
         return listAnnotation
 
@@ -203,6 +229,7 @@ class EventStrategy(AbstractStrategy):
             self.populateAnnotationBlock(annotationBlock, element, elementId, textId)
             self.processCategories(annotationBlock, element, isAnnotationBlockNew)
             # self.processDefinitions(annotationBlock, element, isAnnotationBlockNew)
+            self.processDomains(annotationBlock, element, isAnnotationBlockNew)
 
         return listAnnotation
 
@@ -253,6 +280,7 @@ class GenericItemStrategy(AbstractStrategy):
             self.populateAnnotationBlock(annotationBlock, element, elementId, textId)
             self.processCategories(annotationBlock, element, isAnnotationBlockNew)
             # self.processDefinitions(annotationBlock, element, isAnnotationBlockNew)
+            self.processDomains(annotationBlock, element, isAnnotationBlockNew)
 
         return listAnnotation
 
