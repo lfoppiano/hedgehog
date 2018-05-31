@@ -2,8 +2,10 @@
 
 import sys
 
+from nerd.nerd import NerdClient
 
 from HistoryFishing import HistoryFishing
+from splitLeoHamon import SplitLeoHamon
 
 hf = HistoryFishing()
 
@@ -13,29 +15,15 @@ if len(sys.argv) != 3:
 input = sys.argv[1]
 output = sys.argv[2]
 
-# a = NerdClient(apiBase="http://nerd.huma-num.fr/nerd")
-a = NerdClient()
-print(a.disambiguatePdf(output))
-# print(a.disambiguateText("This is a sentence written in Washington, and computed in Milan Rome and Ancona. ", "it"))
+client = NerdClient()
 
-
-
-sys.exit()
-
-
-### Processing input
-paragraphs = []
-with open(input) as f:
-    for line in f:
-        cleanLine = line #.replace('\n', '')
-        if cleanLine.startswith('-') and cleanLine.endswith('-\n'):
-            continue
-            
-        if cleanLine.endswith('-\n') or cleanLine.endswith('¬\n'):
-            cleanLine[0:len(line)-1]
+### Split and clean
+leoHamonSplitter = SplitLeoHamon()
+paragraphs = leoHamonSplitter.split(input)
 
 ### Analysis
 
-#hf.process()
+string = leoHamonSplitter.toString(paragraphs)
+result = client.disambiguateText(string)
 
-### Writing output
+# Writing output
