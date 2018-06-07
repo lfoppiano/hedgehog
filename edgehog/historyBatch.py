@@ -44,11 +44,9 @@ for entity in result[0]['entities']:
 
     toCSV.append(outEntity)
 
-
-
 import csv
 
-with open (output+ ".csv", 'wb') as csvOutput:
+with open(output + ".csv", 'w') as csvOutput:
     writer = csv.DictWriter(csvOutput, toCSV[0].keys())
     writer.writeheader()
     writer.writerows(toCSV)
