@@ -1,8 +1,8 @@
 # coding: utf8
 # Split the Leo Hamon diary in paragraphs
 
-import sys
 import re
+import sys
 
 
 class SplitLeoHamon:
@@ -84,13 +84,12 @@ class SplitLeoHamon:
                 print(str(sentence))
             print("\n")
 
-    def toString(selfs, paragraphs):
+    def toString(self, paragraphs):
         output = ""
         for paragraph in paragraphs:
             output = output + ' '.join(paragraph)
 
         return output
-
 
 
 if __name__ == '__main__':
