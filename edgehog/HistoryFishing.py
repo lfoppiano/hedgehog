@@ -3,6 +3,7 @@
 from nerd.nerd import NerdClient
 
 from client.ParserClient import ParserClient
+import requests
 
 
 class HistoryFishing:
@@ -16,14 +17,49 @@ class HistoryFishing:
     def fetchPreferredTerm(self, entity, lang):
         preferredTerm = ""
 
-        if 'wikipediaExternalRef' in entity:
-            concept, conceptStatus = self.nerdClient.fetchConcept(str(entity['wikipediaExternalRef']), lang)
-
+        if 'wikidataId' in entity:
+            concept, conceptStatus = self.nerdClient.get_concept(str(entity['wikidataId']))
             if conceptStatus == 200:
                 if 'preferredTerm' in concept:
                     preferredTerm = concept['preferredTerm']
 
-        return preferredTerm
+                    return preferredTerm
+                else:
+                    return
+        elif 'wikipediaExternalRef' in entity:
+            concept, conceptStatus = self.nerdClient.get_concept(str(entity['wikipediaExternalRef']))
+            if conceptStatus == 200:
+                if 'preferredTerm' in concept:
+                    preferredTerm = concept['preferredTerm']
+
+                    return preferredTerm
+                else:
+                    return ""
+
+    def fetchPredictedClass(self, entity, lang):
+        predictedClass = ""
+        urlBase = 'http://nerd.huma-num.fr/kid/service/ner?id='
+
+        if 'wikidataId' in entity:
+
+            request= urlBase+entity['wikidataId']
+            r=requests.get(request)
+            if r.status_code == 200:
+                if 'predictedClass' in r.json():
+                    predictedClass = r.json()['predictedClass']
+                    return predictedClass
+                else:
+                    return ""
+
+        elif 'wikipediaExternalRef' in entity:
+            request = urlBase + entity['wikipediaExternalRef']
+            r = requests.get(request)
+            if r.status_code == 200:
+                if 'predictedClass' in r.json():
+                    predictedClass = r.json()['predictedClass']
+                    return predictedClass
+                else:
+                    return ""
 
     def getField(self, entity, field):
         name = ""

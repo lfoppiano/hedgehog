@@ -25,6 +25,7 @@ paragraphs = leoHamonSplitter.split(input)
 string = leoHamonSplitter.toString(paragraphs)
 result = client.disambiguateText(string)
 
+
 ### Writing output
 ## Preprocessed text
 with open(output + ".raw", 'a') as rawOutput:
@@ -41,7 +42,8 @@ for entity in result[0]['entities']:
             outEntity[headerElement] = entity[headerElement]
         else:
             outEntity[headerElement] = ''
-
+    outEntity['preferredTerm'] = hf.fetchPreferredTerm(entity=entity, lang="en")
+    outEntity['predictedClass'] = hf.fetchPredictedClass(entity=entity,lang="fr")
     toCSV.append(outEntity)
 
 import csv
