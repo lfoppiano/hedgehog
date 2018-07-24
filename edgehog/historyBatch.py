@@ -35,6 +35,8 @@ with open(output + ".raw", 'a') as rawOutput:
 header = ['rawName', 'type', 'offsetStart', 'offsetEnd', 'nerd_selection_score', 'wikipediaExternalRef', 'wikidataId']
 
 toCSV = []
+
+lang=result[0]["language"]["lang"]
 entities_ = result[0]['entities']
 for entity in entities_:
     outEntity = {}
@@ -44,8 +46,8 @@ for entity in entities_:
             outEntity[headerElement] = entity[headerElement]
         else:
             outEntity[headerElement] = ''
-    outEntity['preferredTerm'] = hf.fetchPreferredTerm(entity=entity, lang="en")
-    outEntity['predictedClass'] = hf.fetchPredictedClass(entity=entity,lang="fr")
+    outEntity['preferredTerm'] = hf.fetchPreferredTerm(entity=entity, lang=lang)
+    outEntity['predictedClass'] = hf.fetchPredictedClass(entity=entity,lang=lang)
 
     toCSV.append(outEntity)
 

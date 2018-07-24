@@ -17,24 +17,22 @@ class HistoryFishing:
     def fetchPreferredTerm(self, entity, lang):
         preferredTerm = ""
 
-        if 'wikidataId' in entity:
-            concept, conceptStatus = self.nerdClient.get_concept(str(entity['wikidataId']))
+        if 'wikipediaExternalRef' in entity:
+            concept, conceptStatus = self.nerdClient.get_concept(str(entity['wikipediaExternalRef']), lang)
             if conceptStatus == 200:
                 if 'preferredTerm' in concept:
                     preferredTerm = concept['preferredTerm']
 
                     return preferredTerm
-                else:
-                    return
-        elif 'wikipediaExternalRef' in entity:
-            concept, conceptStatus = self.nerdClient.get_concept(str(entity['wikipediaExternalRef']))
+        elif 'wikidataId' in entity:
+            concept, conceptStatus = self.nerdClient.get_concept(str(entity['wikidataId']), lang)
             if conceptStatus == 200:
-                if 'preferredTerm' in concept:
+                for langs in concept['multilingual']:
+                    if langs["lang"] == lang:
+                        preferredTerm = langs["term"]
+                if preferredTerm is None:
                     preferredTerm = concept['preferredTerm']
-
-                    return preferredTerm
-                else:
-                    return ""
+                return preferredTerm
 
     def fetchPredictedClass(self, entity, lang):
         predictedClass = ""
