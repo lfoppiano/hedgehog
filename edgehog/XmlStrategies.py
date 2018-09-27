@@ -42,7 +42,7 @@ class AbstractStrategy:
             for domain in element['domains']:
                 ET.SubElement(keywords, "term").text = str(domain)
 
-    def processDefinitions(self, parentBlock, element, isAnnotationBlockNew):
+    def processDefinitions(self, parentBlock, concept, isAnnotationBlockNew):
         if not isAnnotationBlockNew:
             return
 
@@ -127,7 +127,7 @@ class LocationStrategy(AbstractStrategy):
             place = ET.SubElement(desc, "place", attrib={"xml:id": elementId})
             self.addTerms(element, place, 'placeName')
             self.addIdno(element, place)
-            self.processDefinitions(place, concept, element, True)
+            self.processDefinitions(place, concept, True)
             isAnnotationBlockNew = True
         else:
             annotationBlock = idUniqueList[elementId]
@@ -203,7 +203,7 @@ class PeriodStrategy(AbstractStrategy):
             date = ET.SubElement(desc, "date", attrib={"xml:id": elementId})
             self.addTerms(element, desc, 'date')
             self.addIdno(element, desc)
-            self.processDefinitions(date, element, True)
+            self.processDefinitions(parentBlock=date, element=element, isAnnotationBlockNew=True)
             isAnnotationBlockNew = True
         else:
             annotationBlock = idUniqueList[elementId]
@@ -292,7 +292,7 @@ class GenericItemStrategy(AbstractStrategy):
             desc = ET.SubElement(term, "desc")
             self.addTerms(element, desc, 'term')
             self.addIdno(element, desc)
-            self.processDefinitions(term, element, True)
+            self.processDefinitions(parentBlock=term, element=element, isAnnotationBlockNew=True)
 
             isAnnotationBlockNew = True
         else:

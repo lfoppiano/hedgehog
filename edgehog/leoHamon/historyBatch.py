@@ -23,12 +23,12 @@ paragraphs = leoHamonSplitter.split(input)
 
 ### Analysis
 string = leoHamonSplitter.toString(paragraphs)
-result = client.disambiguateText(string)
+result = client.disambiguate_text(string)
 
 
 ### Writing output
 ## Preprocessed text
-with open(output + ".raw", 'a') as rawOutput:
+with open(output + ".raw", 'w') as rawOutput:
     rawOutput.write(string)
 
 ## Entities
@@ -76,7 +76,12 @@ for i in reversed(range(0, len(entities_))):
 
     indexText = start
 
+
 with open(output + ".html", 'w') as htmlOutput:
-    htmlOutput.write('<html><header><meta charset="utf-8"/></header><body>\n'
+    htmlOutput.write('<html>')
+    header = '<header><meta charset="utf-8"/></header>'
+    htmlOutput.write(header)
+    htmlOutput.write('<body>\n'
                      + html
-                     + '\n</body></html>')
+                     + '\n</body>')
+    htmlOutput.write('</html>')
