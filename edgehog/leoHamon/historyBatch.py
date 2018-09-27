@@ -5,7 +5,7 @@ import sys
 from nerd.nerd import NerdClient
 
 from HistoryFishing import HistoryFishing
-from splitLeoHamon import SplitLeoHamon
+from leoHamon.splitLeoHamon import SplitLeoHamon
 
 hf = HistoryFishing()
 
