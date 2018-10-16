@@ -1,8 +1,8 @@
-#coding utf-8
+# coding utf-8
 import sys
 import os
 from bs4 import BeautifulSoup
-from nerd.nerd import NerdClient
+from nerd.nerd_client import NerdClient
 
 from edgehog.HistoryFishing import HistoryFishing
 
@@ -15,14 +15,15 @@ hf = HistoryFishing()
 # input directory
 input = sys.argv[1]
 
+
 # output directory
 # output = sys.argv[2]
 def file_is_empty(path):
-    return os.stat(path).st_size==0
+    return os.stat(path).st_size == 0
 
 
 def listXMLfiles(directory):
-    EADfiles = [] #liste fichiers
+    EADfiles = []  # liste fichiers
     for fileName in os.listdir(directory):
         pathFile = directory + "/" + fileName
         if file_is_empty(pathFile) == False:
@@ -30,15 +31,16 @@ def listXMLfiles(directory):
     return EADfiles
 
 
-
 def load(file):
-    #load XML files with Beautiful Soup
+    # load XML files with Beautiful Soup
     with open(file) as ead:
         soup = BeautifulSoup(ead, "xml")
     return soup
+
+
 # if workking with a directory as input
-#files = (listXMLfiles(input))
-#for file in files:
+# files = (listXMLfiles(input))
+# for file in files:
 
 soup = load(input)
 titles = soup.find_all('unittitle')
@@ -46,28 +48,24 @@ titles = soup.find_all('unittitle')
 listEntities = []
 
 for title in titles:
-    string = repr(title.contents)
-    result = client.disambiguateText(string)
+    # string = repr(title.contents)
+    result = client.disambiguate_text(title.get_text())
 
-    if result is not None:
+    if result[0] is not None:
         for entity in result[0]['entities']:
             if "type" in entity:
                 listEntities.append((entity["rawName"], entity["type"]))
-        #number of entities found
+        # number of entities found
 
-
-#header = ['rawName', 'type', 'offsetStart', 'offsetEnd', 'nerd_selection_score', 'wikipediaExternalRef', 'wikidataId']
-
-
-
+# header = ['rawName', 'type', 'offsetStart', 'offsetEnd', 'nerd_selection_score', 'wikipediaExternalRef', 'wikidataId']
 
 
 ## Writing CSV
-#import csv
+# import csv
 
-#with open(output + ".csv", 'w') as csvOutput:
- ##   writer = csv.DictWriter(csvOutput, toCSV[0].keys())
-   # writer.writeheader()
+# with open(output + ".csv", 'w') as csvOutput:
+##   writer = csv.DictWriter(csvOutput, toCSV[0].keys())
+# writer.writeheader()
 
 soup = BeautifulSoup(open(input), 'xml')
 archdesc = soup.ead.archdesc
