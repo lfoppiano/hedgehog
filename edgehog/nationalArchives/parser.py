@@ -54,17 +54,23 @@ for title in titles:
     if result[0] is not None:
         for entity in result[0]['entities']:
             if "type" in entity:
-                listEntities.append((entity["rawName"], entity["type"]))
-        # number of entities found
+                wikidataId = ''
+                if 'wikidataId' in entity:
+                    wikidataId = entity["wikidataId"]
+
+                listEntities.append(
+                    {'rawName': entity["rawName"], 'class': entity["type"], 'wikidataId': wikidataId});
 
 # header = ['rawName', 'type', 'offsetStart', 'offsetEnd', 'nerd_selection_score', 'wikipediaExternalRef', 'wikidataId']
 
 
-## Writing CSV
+# listEntities = [{'rawName': 'Pope', 'class':'PERSON', 'wikidataID': 'Q1234'}]
+
+### Writing CSV ###
 # import csv
 
 # with open(output + ".csv", 'w') as csvOutput:
-##   writer = csv.DictWriter(csvOutput, toCSV[0].keys())
+#   writer = csv.DictWriter(csvOutput, toCSV[0].keys())
 # writer.writeheader()
 
 soup = BeautifulSoup(open(input), 'xml')
@@ -73,7 +79,7 @@ archdesc = soup.ead.archdesc
 controlAccess = soup.new_tag("controlaccess")
 archdesc.insert(len(archdesc.contents), controlAccess)
 
-## corpname, famname, function, genreform, geogname,name, occupation, persname, subject,
+# corpname, famname, function, genreform, geogname,name, occupation, persname, subject,
 
 
 mapping = {
@@ -93,14 +99,16 @@ for k, v in mapping.items():
     for x in v:
         inverseMapping.setdefault(x, []).append(k)
 
-# print(inverseMapping)
-
 for entity in listEntities:
-    tag = inverseMapping.get(entity[1])
+    tag = inverseMapping.get(entity['class'])
     if tag is None:
         tag = 'subject'
-    entityTag = soup.new_tag(tag[0])
-    entityTag.string = entity[0]
+    attrs = {}
+    if len(entity['wikidataId']) > 0:
+        attrs = {'authfilenumber': entity['wikidataId']}
+
+    entityTag = soup.new_tag(name=tag[0], attrs=attrs)
+    entityTag.string = entity['rawName']
     controlAccess.append(entityTag)
 
 print(archdesc)
