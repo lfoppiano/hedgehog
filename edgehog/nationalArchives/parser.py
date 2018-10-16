@@ -101,7 +101,7 @@ for entity in listEntities:
         tag = 'subject'
     entityTag = soup.new_tag(tag[0])
     entityTag.string = entity[0]
-    controlAccess.insert_after(entityTag)
+    controlAccess.append(entityTag)
 
 print(archdesc)
 # print(soup)
