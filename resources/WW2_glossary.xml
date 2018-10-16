@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-model href="../../standardsLibrary/terminology/specification/TBXinTEI.rnc" type="application/relax-ng-compact-syntax"?>
+<?xml-model href="../../../parthenos/standardsLibrary/terminology/specification/TBXinTEI.rnc" type="application/relax-ng-compact-syntax"?>
 <TEI xmlns="http://www.tei-c.org/ns/1.0">
    <teiHeader>
       <fileDesc>
@@ -125,7 +125,7 @@
             <conceptEntry xml:id="c_11">
                <langSec xml:lang="fr">
                   <form type="lemma">
-                     <orth>État clandestin (avec organigramme)</orth>
+                     <orth>État clandestin</orth>
                   </form>
                </langSec>
             </conceptEntry>
@@ -165,9 +165,15 @@
                </langSec>
             </conceptEntry>
             <conceptEntry xml:id="c_23">
-               <langSec xml:lang="fr">
+               <langSec xml:lang="en">
                   <form type="lemma">
                      <orth>Special Operations Executive</orth>
+                  </form>
+                  <form type="variant">
+                     <orth>SOE</orth>
+                  </form>
+                  <form type="variant">
+                     <orth>S.O.E.</orth>
                   </form>
                </langSec>
             </conceptEntry>
@@ -179,7 +185,7 @@
                </langSec>
             </conceptEntry>
             <conceptEntry xml:id="c_29">
-               <descrip type="subordinateConceptPartitive" target="#c_15"/>
+               <conceptDesc type="subordinateConceptPartitive" target="#c_15"/>
                <langSec xml:lang="fr">
                   <form type="lemma">
                      <orth>Armée des Volontaires</orth>

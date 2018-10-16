@@ -2,8 +2,9 @@
 # import sys
 from nerd.nerd import NerdClient
 
-from client.ParserClient import ParserClient
 import requests
+
+from edgehog.client.ParserClient import ParserClient
 
 
 class HistoryFishing:
