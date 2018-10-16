@@ -2,7 +2,7 @@
 import sys
 import os
 from bs4 import BeautifulSoup
-from nerd.nerd_client import NerdClient
+from nerd.nerd import NerdClient
 
 from edgehog.HistoryFishing import HistoryFishing
 
@@ -43,15 +43,20 @@ def load(file):
 # for file in files:
 
 soup = load(input)
-titles = soup.find_all('unittitle')
-
+dids = soup.find_all('did')
 listEntities = []
 
-for title in titles:
-    # string = repr(title.contents)
-    result = client.disambiguate_text(title.get_text())
+for did in dids:
+    unittitles = did.find_all("unittitle")
+    if unittitles != []:
+        didTitles = ""
+        for unittitle in unittitles:
+            didTitles = didTitles + unittitle.get_text(strip=True) + " "
 
-    if result[0] is not None:
+    didTitles = didTitles.replace('\xc2\xa0', ' ').replace('\xa0', ' ')
+    result = client.disambiguateText(didTitles)
+
+    if result[1] == 200:
         for entity in result[0]['entities']:
             if "type" in entity:
                 wikidataId = ''
