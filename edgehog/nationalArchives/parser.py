@@ -46,6 +46,7 @@ soup = load(input)
 dids = soup.find_all('did')
 listEntities = []
 
+header = ['rawName', 'class', 'wikidataId', 'preferredTerm']
 for did in dids:
     unittitles = did.find_all("unittitle")
     if unittitles != []:
@@ -62,9 +63,9 @@ for did in dids:
                 wikidataId = ''
                 if 'wikidataId' in entity:
                     wikidataId = entity["wikidataId"]
-                    preferredTerm = hf.fetchPreferredTerm(entity=entity, lang=fr)
-                    predictedClass = hf.fetchPredictedClass(entity=entity, lang=fr)
-                listEntities.append({'rawName': entity["rawName"], 'class': entity["type"], 'wikidataId': wikidataId, 'preferredTerm': preferredTerm, 'predictedClass': predictedClass});
+                    preferredTerm = hf.fetchPreferredTerm(entity=entity, lang="fr")
+                    predictedClass = hf.fetchPredictedClass(entity=entity, lang="fr")
+                    listEntities.append({'rawName': entity["rawName"], 'class': entity["type"], 'wikidataId': wikidataId, 'preferredTerm': preferredTerm, 'predictedClass': predictedClass});
 
 # header = ['rawName', 'type', 'offsetStart', 'offsetEnd', 'nerd_selection_score', 'wikipediaExternalRef', 'wikidataId']
 
