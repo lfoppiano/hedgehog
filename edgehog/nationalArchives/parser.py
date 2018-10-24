@@ -106,7 +106,11 @@ for k, v in mapping.items():
         inverseMapping.setdefault(x, []).append(k)
 
 for entity in listEntities:
-    tag = inverseMapping.get(entity['class'])
+    if entity['predictedClass']:
+        tag = inverseMapping.get(entity['predictedClass'])
+    else:
+        tag = inverseMapping.get(entity['class'])
+
     if tag is None:
         tag = 'subject'
     attrs = {}
@@ -114,7 +118,11 @@ for entity in listEntities:
         attrs = {'authfilenumber': entity['wikidataId']}
 
     entityTag = soup.new_tag(name=tag[0], attrs=attrs)
-    entityTag.string = entity['rawName']
+
+    if entity['preferredTerm']:
+        entityTag.string = entity['preferredTerm']
+    else:
+        entityTag.string = entity['rawName']
     controlAccess.append(entityTag)
 
 print(archdesc)
