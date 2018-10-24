@@ -2,7 +2,7 @@
 
 import sys
 
-from nerd.nerd import NerdClient
+from nerd.nerd_client import NerdClient
 
 from HistoryFishing import HistoryFishing
 from leoHamon.splitLeoHamon import SplitLeoHamon

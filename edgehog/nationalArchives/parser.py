@@ -2,7 +2,7 @@
 import sys
 import os
 from bs4 import BeautifulSoup
-from nerd.nerd import NerdClient
+from nerd.nerd_client import NerdClient
 
 from edgehog.HistoryFishing import HistoryFishing
 
@@ -54,7 +54,7 @@ for did in dids:
             didTitles = didTitles + unittitle.get_text(strip=True) + " "
 
     didTitles = didTitles.replace('\xc2\xa0', ' ').replace('\xa0', ' ')
-    result = client.disambiguateText(didTitles)
+    result = client.disambiguate_text(didTitles)
 
     if result[1] == 200:
         for entity in result[0]['entities']:
@@ -62,9 +62,9 @@ for did in dids:
                 wikidataId = ''
                 if 'wikidataId' in entity:
                     wikidataId = entity["wikidataId"]
-
-                listEntities.append(
-                    {'rawName': entity["rawName"], 'class': entity["type"], 'wikidataId': wikidataId});
+                    preferredTerm = hf.fetchPreferredTerm(entity=entity, lang=fr)
+                    predictedClass = hf.fetchPredictedClass(entity=entity, lang=fr)
+                listEntities.append({'rawName': entity["rawName"], 'class': entity["type"], 'wikidataId': wikidataId, 'preferredTerm': preferredTerm, 'predictedClass': predictedClass});
 
 # header = ['rawName', 'type', 'offsetStart', 'offsetEnd', 'nerd_selection_score', 'wikipediaExternalRef', 'wikidataId']
 

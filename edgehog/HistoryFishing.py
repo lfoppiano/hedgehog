@@ -1,6 +1,6 @@
 # coding: utf-8
 # import sys
-from nerd.nerd import NerdClient
+from nerd.nerd_client import NerdClient
 
 import requests
 
