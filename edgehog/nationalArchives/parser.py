@@ -112,7 +112,8 @@ for entity in listEntities:
         tag = inverseMapping.get(entity['class'])
 
     if tag is None:
-        tag = 'subject'
+        tag = ['subject']
+        
     attrs = {}
     if len(entity['wikidataId']) > 0:
         attrs = {'authfilenumber': entity['wikidataId']}
@@ -125,5 +126,5 @@ for entity in listEntities:
         entityTag.string = entity['rawName']
     controlAccess.append(entityTag)
 
-print(archdesc)
+print(soup)
 # print(soup)

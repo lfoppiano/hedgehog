@@ -24,7 +24,6 @@ class HistoryFishing:
                 if 'preferredTerm' in concept:
                     preferredTerm = concept['preferredTerm']
 
-                    return preferredTerm
         elif 'wikidataId' in entity:
             concept, conceptStatus = self.nerdClient.get_concept(str(entity['wikidataId']), lang)
             if conceptStatus == 200:
@@ -33,7 +32,8 @@ class HistoryFishing:
                         preferredTerm = langs["term"]
                 if preferredTerm is None:
                     preferredTerm = concept['preferredTerm']
-                return preferredTerm
+
+        return preferredTerm
 
     def fetchPredictedClass(self, entity, lang):
         predictedClass = ""
