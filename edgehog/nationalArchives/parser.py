@@ -15,6 +15,25 @@ hf = HistoryFishing()
 # input directory
 input = sys.argv[1]
 
+# corpname, famname, function, genreform, geogname,name, occupation, persname, subject,
+
+mapping = {
+    # 'famname': ['PERSON'],
+    # 'function': []
+    # 'genreform',
+    'geogname': ['LOCATION'],
+    # 'name': ['PERSON'],
+    # 'occupation':
+    'persname': ['PERSON'],
+    # 'subject': ['UNKNOWN', None, 'ARTIFACT', 'ANIMAL', 'PLANT', 'WEBSITE'],
+    'corpname': ['BUSINESS', 'INSTITUTION', 'ORGANISATION']
+}
+
+inverseMapping = {}
+for k, v in mapping.items():
+    for x in v:
+        inverseMapping.setdefault(x, []).append(k)
+
 
 # output directory
 # output = sys.argv[2]
@@ -58,19 +77,65 @@ for did in dids:
     result = client.disambiguate_text(didTitles)
 
     if result[1] == 200:
+        first_time = True
+        controlAccess = None
         for entity in result[0]['entities']:
+            if first_time:
+                controlAccess = soup.new_tag("controlaccess")
+                first_time = False
+
+            out = {
+                'rawName': entity["rawName"]
+            }
+
             if "type" in entity:
-                wikidataId = ''
-                if 'wikidataId' in entity:
-                    wikidataId = entity["wikidataId"]
-                    preferredTerm = hf.fetchPreferredTerm(entity=entity, lang="fr")
-                    predictedClass = hf.fetchPredictedClass(entity=entity, lang="fr")
-                    listEntities.append({'rawName': entity["rawName"], 'class': entity["type"], 'wikidataId': wikidataId, 'preferredTerm': preferredTerm, 'predictedClass': predictedClass});
+                out['class'] = entity["type"]
 
-# header = ['rawName', 'type', 'offsetStart', 'offsetEnd', 'nerd_selection_score', 'wikipediaExternalRef', 'wikidataId']
+            if 'wikidataId' in entity:
+                wikidataId = entity["wikidataId"]
+                preferredTerm = hf.fetchPreferredTerm(entity=entity, lang="fr")
+                predictedClass = hf.fetchPredictedClass(entity=entity, lang="fr")
+                out['predictedClass'] = predictedClass
+                out['wikidataId'] = wikidataId
+                out['preferredTerm'] = preferredTerm
+                # listEntities.append({'rawName': entity["rawName"], 'class': entity["type"], 'wikidataId': wikidataId, 'preferredTerm': preferredTerm, 'predictedClass': predictedClass});
+
+                parent = did.parent
+                parent.insert(len(parent.contents), controlAccess)
+
+                if 'predictedClass' in out:
+                    tag = inverseMapping.get(out['predictedClass'])
+                elif 'class' in out:
+                    tag = inverseMapping.get(out['class'])
+                else:
+                    tag = ['subject']
+
+                if tag is None:
+                    tag = ['subject']
+
+                attrs = {}
+                if 'wikidataId' in out and len(out['wikidataId']) > 0:
+                    attrs = {'authfilenumber': out['wikidataId']}
+
+                entityTag = soup.new_tag(name=tag[0], attrs=attrs)
+
+                if 'preferredTerm' in out:
+                    entityTag.string = out['preferredTerm']
+                else:
+                    entityTag.string = out['rawName']
+                controlAccess.append(entityTag)
+
+# archdesc = soup.ead.archdesc
 
 
-# listEntities = [{'rawName': 'Pope', 'class':'PERSON', 'wikidataID': 'Q1234'}]
+print(soup)
+
+### Writing output
+## Preprocessed text
+with open("output" + ".xml", 'w') as rawOutput:
+    rawOutput.write(str(soup))
+
+# print(soup)
 
 ### Writing CSV ###
 # import csv
@@ -78,53 +143,3 @@ for did in dids:
 # with open(output + ".csv", 'w') as csvOutput:
 #   writer = csv.DictWriter(csvOutput, toCSV[0].keys())
 # writer.writeheader()
-
-soup = BeautifulSoup(open(input), 'xml')
-archdesc = soup.ead.archdesc
-
-controlAccess = soup.new_tag("controlaccess")
-archdesc.insert(len(archdesc.contents), controlAccess)
-
-# corpname, famname, function, genreform, geogname,name, occupation, persname, subject,
-
-
-mapping = {
-    # 'famname': ['PERSON'],
-    # 'function': []
-    # 'genreform',
-    'geogname': ['LOCATION'],
-    # 'name': ['PERSON'],
-    # 'occupation':
-    'persname': ['PERSON'],
-    # 'subject': ['UNKNOWN', None, 'ARTIFACT', 'ANIMAL', 'PLANT', 'WEBSITE'],
-    'corpname': ['BUSINESS', 'INSTITUTION', 'ORGANISATION']
-}
-
-inverseMapping = {}
-for k, v in mapping.items():
-    for x in v:
-        inverseMapping.setdefault(x, []).append(k)
-
-for entity in listEntities:
-    if entity['predictedClass']:
-        tag = inverseMapping.get(entity['predictedClass'])
-    else:
-        tag = inverseMapping.get(entity['class'])
-
-    if tag is None:
-        tag = ['subject']
-        
-    attrs = {}
-    if len(entity['wikidataId']) > 0:
-        attrs = {'authfilenumber': entity['wikidataId']}
-
-    entityTag = soup.new_tag(name=tag[0], attrs=attrs)
-
-    if entity['preferredTerm']:
-        entityTag.string = entity['preferredTerm']
-    else:
-        entityTag.string = entity['rawName']
-    controlAccess.append(entityTag)
-
-print(soup)
-# print(soup)
