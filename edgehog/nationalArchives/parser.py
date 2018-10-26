@@ -68,62 +68,62 @@ listEntities = []
 header = ['rawName', 'class', 'wikidataId', 'preferredTerm']
 for did in dids:
     unittitles = did.find_all("unittitle")
-    if unittitles != []:
+    if len(unittitles) > 0:
         didTitles = ""
         for unittitle in unittitles:
             didTitles = didTitles + unittitle.get_text(strip=True) + " "
 
-    didTitles = didTitles.replace('\xc2\xa0', ' ').replace('\xa0', ' ')
-    result = client.disambiguate_text(didTitles)
+        didTitles = didTitles.replace('\xc2\xa0', ' ').replace('\xa0', ' ')
+        result = client.disambiguate_text(didTitles)
 
-    if result[1] == 200:
-        first_time = True
-        controlAccess = None
-        for entity in result[0]['entities']:
-            if first_time:
-                controlAccess = soup.new_tag("controlaccess")
-                first_time = False
+        if result[1] == 200:
+            first_time = True
+            controlAccess = None
+            for entity in result[0]['entities']:
+                if first_time:
+                    controlAccess = soup.new_tag("controlaccess")
+                    first_time = False
+    
+                out = {
+                    'rawName': entity["rawName"]
+                }
 
-            out = {
-                'rawName': entity["rawName"]
-            }
+                if "type" in entity:
+                    out['class'] = entity["type"]
 
-            if "type" in entity:
-                out['class'] = entity["type"]
+                if 'wikidataId' in entity:
+                    wikidataId = entity["wikidataId"]
+                    preferredTerm = hf.fetchPreferredTerm(entity=entity, lang="fr")
+                    predictedClass = hf.fetchPredictedClass(entity=entity, lang="fr")
+                    out['predictedClass'] = predictedClass
+                    out['wikidataId'] = wikidataId
+                    out['preferredTerm'] = preferredTerm
+                    # listEntities.append({'rawName': entity["rawName"], 'class': entity["type"], 'wikidataId': wikidataId, 'preferredTerm': preferredTerm, 'predictedClass': predictedClass});
 
-            if 'wikidataId' in entity:
-                wikidataId = entity["wikidataId"]
-                preferredTerm = hf.fetchPreferredTerm(entity=entity, lang="fr")
-                predictedClass = hf.fetchPredictedClass(entity=entity, lang="fr")
-                out['predictedClass'] = predictedClass
-                out['wikidataId'] = wikidataId
-                out['preferredTerm'] = preferredTerm
-                # listEntities.append({'rawName': entity["rawName"], 'class': entity["type"], 'wikidataId': wikidataId, 'preferredTerm': preferredTerm, 'predictedClass': predictedClass});
+                parent = did.parent
+                parent.insert(len(parent.contents), controlAccess)
 
-            parent = did.parent
-            parent.insert(len(parent.contents), controlAccess)
+                if 'predictedClass' in out:
+                    tag = inverseMapping.get(out['predictedClass'])
+                elif 'class' in out:
+                    tag = inverseMapping.get(out['class'])
+                else:
+                    tag = ['subject']
 
-            if 'predictedClass' in out:
-                tag = inverseMapping.get(out['predictedClass'])
-            elif 'class' in out:
-                tag = inverseMapping.get(out['class'])
-            else:
-                tag = ['subject']
+                if tag is None:
+                    tag = ['subject']
 
-            if tag is None:
-                tag = ['subject']
+                attrs = {}
+                if 'wikidataId' in out and len(out['wikidataId']) > 0:
+                    attrs = {'authfilenumber': out['wikidataId']}
 
-            attrs = {}
-            if 'wikidataId' in out and len(out['wikidataId']) > 0:
-                attrs = {'authfilenumber': out['wikidataId']}
+                entityTag = soup.new_tag(name=tag[0], attrs=attrs)
 
-            entityTag = soup.new_tag(name=tag[0], attrs=attrs)
-
-            if 'preferredTerm' in out:
-                entityTag.string = out['preferredTerm']
-            else:
-                entityTag.string = out['rawName']
-            controlAccess.append(entityTag)
+                if 'preferredTerm' in out:
+                    entityTag.string = out['preferredTerm']
+                else:
+                    entityTag.string = out['rawName']
+                controlAccess.append(entityTag)
 
 # archdesc = soup.ead.archdesc
 
@@ -132,7 +132,7 @@ print(soup)
 
 ### Writing output
 ## Preprocessed text
-with open("output" + ".xml", 'w') as rawOutput:
+with open(input + ".xml", 'w') as rawOutput:
     rawOutput.write(str(soup))
 
 # print(soup)
