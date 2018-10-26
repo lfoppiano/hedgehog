@@ -115,7 +115,7 @@ for did in dids:
 
                 attrs = {}
                 if 'wikidataId' in out and len(out['wikidataId']) > 0:
-                    attrs = {'authfilenumber': out['wikidataId']}
+                    attrs = {'authfilenumber': out['wikidataId'], 'source':'wikidata'}
 
                 entityTag = soup.new_tag(name=tag[0], attrs=attrs)
 
