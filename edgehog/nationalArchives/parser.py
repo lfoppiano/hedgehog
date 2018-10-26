@@ -83,7 +83,7 @@ for did in dids:
                 if first_time:
                     controlAccess = soup.new_tag("controlaccess")
                     first_time = False
-    
+
                 out = {
                     'rawName': entity["rawName"]
                 }
@@ -132,7 +132,7 @@ print(soup)
 
 ### Writing output
 ## Preprocessed text
-with open(input + ".xml", 'w') as rawOutput:
+with open("output" + ".xml", 'w') as rawOutput:
     rawOutput.write(str(soup))
 
 # print(soup)
