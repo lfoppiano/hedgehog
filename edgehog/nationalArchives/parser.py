@@ -100,30 +100,30 @@ for did in dids:
                 out['preferredTerm'] = preferredTerm
                 # listEntities.append({'rawName': entity["rawName"], 'class': entity["type"], 'wikidataId': wikidataId, 'preferredTerm': preferredTerm, 'predictedClass': predictedClass});
 
-                parent = did.parent
-                parent.insert(len(parent.contents), controlAccess)
+            parent = did.parent
+            parent.insert(len(parent.contents), controlAccess)
 
-                if 'predictedClass' in out:
-                    tag = inverseMapping.get(out['predictedClass'])
-                elif 'class' in out:
-                    tag = inverseMapping.get(out['class'])
-                else:
-                    tag = ['subject']
+            if 'predictedClass' in out:
+                tag = inverseMapping.get(out['predictedClass'])
+            elif 'class' in out:
+                tag = inverseMapping.get(out['class'])
+            else:
+                tag = ['subject']
 
-                if tag is None:
-                    tag = ['subject']
+            if tag is None:
+                tag = ['subject']
 
-                attrs = {}
-                if 'wikidataId' in out and len(out['wikidataId']) > 0:
-                    attrs = {'authfilenumber': out['wikidataId']}
+            attrs = {}
+            if 'wikidataId' in out and len(out['wikidataId']) > 0:
+                attrs = {'authfilenumber': out['wikidataId']}
 
-                entityTag = soup.new_tag(name=tag[0], attrs=attrs)
+            entityTag = soup.new_tag(name=tag[0], attrs=attrs)
 
-                if 'preferredTerm' in out:
-                    entityTag.string = out['preferredTerm']
-                else:
-                    entityTag.string = out['rawName']
-                controlAccess.append(entityTag)
+            if 'preferredTerm' in out:
+                entityTag.string = out['preferredTerm']
+            else:
+                entityTag.string = out['rawName']
+            controlAccess.append(entityTag)
 
 # archdesc = soup.ead.archdesc
 
