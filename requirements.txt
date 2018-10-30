@@ -1,6 +1,7 @@
-requests==2.18.4
+requests>=2.20.0
 zenlog==1.1
 bottle
 networkx
 beautifulsoup4
 entity-fishing-client >= 0.3.0
+lxml
