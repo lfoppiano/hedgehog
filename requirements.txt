@@ -1,4 +1,4 @@
-requests>=2.20.0
+requests>=2.32.0
 zenlog==1.1
 bottle
 networkx
