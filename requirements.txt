@@ -5,3 +5,4 @@ networkx
 beautifulsoup4
 entity-fishing-client >= 0.3.0
 lxml
+urllib3>=2.5.0 # not directly required, pinned by Snyk to avoid a vulnerability
